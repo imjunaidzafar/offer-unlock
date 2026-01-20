@@ -79,9 +79,10 @@ export interface AuthState {
 
 // Navigation Types
 export type RootStackParamList = {
-  Wizard: undefined;
   Auth: undefined;
+  Wizard: undefined;
   Result: undefined;
+  Home: undefined;
 };
 
 export type WizardStackParamList = {
@@ -91,6 +92,6 @@ export type WizardStackParamList = {
 };
 
 export type AuthStackParamList = {
-  SignUp: undefined;
   Login: undefined;
+  SignUp: undefined;
 };
