@@ -3,6 +3,20 @@ import {persist, createJSONStorage} from 'zustand/middleware';
 import {zustandStorage} from './storage';
 import type {AuthState, SignUpData, LoginData, User} from '../types';
 
+// Hydration state
+let authHydrated = false;
+const authHydrationListeners: Array<() => void> = [];
+
+export const onAuthHydration = (callback: () => void) => {
+  if (authHydrated) {
+    callback();
+  } else {
+    authHydrationListeners.push(callback);
+  }
+};
+
+export const isAuthHydrated = () => authHydrated;
+
 // Mock API delay
 const mockDelay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -124,6 +138,11 @@ export const useAuthStore = create<AuthState>()(
         user: state.user,
         isAuthenticated: state.isAuthenticated,
       }),
+      onRehydrateStorage: () => (state) => {
+        authHydrated = true;
+        authHydrationListeners.forEach(listener => listener());
+        authHydrationListeners.length = 0;
+      },
     },
   ),
 );

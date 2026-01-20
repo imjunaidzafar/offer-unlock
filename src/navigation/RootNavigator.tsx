@@ -5,8 +5,8 @@ import {WizardStack} from './WizardStack';
 import {AuthStack} from './AuthStack';
 import {ResultScreen} from '../screens/wizard/ResultScreen';
 import {HomeScreen} from '../screens/HomeScreen';
-import {useWizardStore} from '../store/useWizardStore';
-import {useAuthStore} from '../store/useAuthStore';
+import {useWizardStore, isWizardHydrated, onWizardHydration} from '../store/useWizardStore';
+import {useAuthStore, isAuthHydrated, onAuthHydration} from '../store/useAuthStore';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -16,13 +16,27 @@ export const RootNavigator: React.FC = () => {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    // Small delay to ensure stores are hydrated
-    const timer = setTimeout(() => setIsReady(true), 100);
+    // Wait for both stores to be hydrated
+    const checkHydration = () => {
+      if (isAuthHydrated() && isWizardHydrated()) {
+        setIsReady(true);
+      }
+    };
+
+    // Check immediately in case already hydrated
+    checkHydration();
+
+    // Listen for hydration events
+    onAuthHydration(checkHydration);
+    onWizardHydration(checkHydration);
+
+    // Fallback timeout in case hydration callbacks don't fire
+    const timer = setTimeout(() => setIsReady(true), 500);
     return () => clearTimeout(timer);
   }, []);
 
   if (!isReady) {
-    return null; // Or a splash screen
+    return null; // Splash screen handles this
   }
 
   // Auth First Flow:
