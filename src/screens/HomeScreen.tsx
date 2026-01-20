@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, StyleSheet, ScrollView} from 'react-native';
+import {View, Text, StyleSheet, ScrollView, TouchableOpacity} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {SafeAreaWrapper, Button} from '../components/ui';
@@ -28,6 +28,18 @@ export const HomeScreen: React.FC = () => {
 
   const handleViewOffer = () => {
     navigation.navigate('Result');
+  };
+
+  const handleCompare = () => {
+    navigation.navigate('Compare');
+  };
+
+  const handleSupport = () => {
+    navigation.navigate('Support');
+  };
+
+  const handleSettings = () => {
+    navigation.navigate('Settings');
   };
 
   const getOfferDetails = () => {
@@ -131,18 +143,27 @@ export const HomeScreen: React.FC = () => {
         <View style={styles.actionsSection}>
           <Text style={styles.sectionTitle}>Quick Actions</Text>
           <View style={styles.actionsRow}>
-            <View style={styles.actionCard}>
+            <TouchableOpacity
+              style={styles.actionCard}
+              onPress={handleCompare}
+              activeOpacity={0.7}>
               <Text style={styles.actionIcon}>📊</Text>
               <Text style={styles.actionText}>Compare</Text>
-            </View>
-            <View style={styles.actionCard}>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.actionCard}
+              onPress={handleSupport}
+              activeOpacity={0.7}>
               <Text style={styles.actionIcon}>📞</Text>
               <Text style={styles.actionText}>Support</Text>
-            </View>
-            <View style={styles.actionCard}>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.actionCard}
+              onPress={handleSettings}
+              activeOpacity={0.7}>
               <Text style={styles.actionIcon}>⚙️</Text>
               <Text style={styles.actionText}>Settings</Text>
-            </View>
+            </TouchableOpacity>
           </View>
         </View>
 
