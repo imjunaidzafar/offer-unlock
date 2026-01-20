@@ -6,7 +6,6 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-  Alert,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
@@ -14,6 +13,7 @@ import {useForm, Controller} from 'react-hook-form';
 import {SafeAreaWrapper, Input, Button} from '../../components/ui';
 import {useAuthStore} from '../../store/useAuthStore';
 import {signUpSchema, SignUpFormData, safeZodResolver} from '../../utils/validation';
+import {colors, shadows, borderRadius} from '../../theme';
 import type {AuthStackParamList, RootStackParamList} from '../../types';
 
 type AuthNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'SignUp'>;
@@ -22,10 +22,10 @@ type RootNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 export const SignUpScreen: React.FC = () => {
   const authNavigation = useNavigation<AuthNavigationProp>();
   const rootNavigation = useNavigation<RootNavigationProp>();
-  const signUp = useAuthStore((state) => state.signUp);
-  const isLoading = useAuthStore((state) => state.isLoading);
-  const error = useAuthStore((state) => state.error);
-  const clearError = useAuthStore((state) => state.clearError);
+  const signUp = useAuthStore(state => state.signUp);
+  const isLoading = useAuthStore(state => state.isLoading);
+  const error = useAuthStore(state => state.error);
+  const clearError = useAuthStore(state => state.clearError);
 
   const {
     control,
@@ -46,10 +46,10 @@ export const SignUpScreen: React.FC = () => {
     try {
       clearError();
       await signUp(data);
-      // Navigate to Result screen on success
+      // Auth First: New users go to Wizard
       rootNavigation.reset({
         index: 0,
-        routes: [{name: 'Result'}],
+        routes: [{name: 'Wizard'}],
       });
     } catch (err) {
       // Error is handled by the store and displayed via error state
@@ -67,14 +67,18 @@ export const SignUpScreen: React.FC = () => {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <ScrollView
           contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled">
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}>
+          {/* Header */}
           <View style={styles.header}>
-            <View style={styles.lockIcon}>
-              <Text style={styles.lockEmoji}>🔓</Text>
+            <View style={styles.logoContainer}>
+              <View style={styles.logoGradient}>
+                <Text style={styles.logoIcon}>✨</Text>
+              </View>
             </View>
-            <Text style={styles.title}>Create Your Account</Text>
+            <Text style={styles.title}>Create Account</Text>
             <Text style={styles.subtitle}>
-              Sign up to unlock your personalized offer and save your progress.
+              Join us to unlock personalized offers tailored just for you.
             </Text>
           </View>
 
@@ -84,7 +88,8 @@ export const SignUpScreen: React.FC = () => {
             </View>
           )}
 
-          <View style={styles.form}>
+          {/* Form Card */}
+          <View style={styles.formCard}>
             <Controller
               control={control}
               name="username"
@@ -155,12 +160,10 @@ export const SignUpScreen: React.FC = () => {
             />
 
             <View style={styles.passwordHints}>
-              <Text style={styles.hintTitle}>Password must contain:</Text>
+              <Text style={styles.hintTitle}>Password requirements:</Text>
               <Text style={styles.hint}>• At least 8 characters</Text>
-              <Text style={styles.hint}>• One uppercase letter</Text>
-              <Text style={styles.hint}>• One lowercase letter</Text>
-              <Text style={styles.hint}>• One number</Text>
-              <Text style={styles.hint}>• One special character</Text>
+              <Text style={styles.hint}>• One uppercase & lowercase letter</Text>
+              <Text style={styles.hint}>• One number & special character</Text>
             </View>
           </View>
 
@@ -197,60 +200,69 @@ const styles = StyleSheet.create({
     paddingTop: 32,
     paddingBottom: 24,
   },
-  lockIcon: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: '#EEF2FF',
-    alignItems: 'center',
-    justifyContent: 'center',
+  logoContainer: {
     marginBottom: 16,
   },
-  lockEmoji: {
-    fontSize: 32,
+  logoGradient: {
+    width: 80,
+    height: 80,
+    borderRadius: 24,
+    backgroundColor: colors.accent.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...shadows.lg,
+  },
+  logoIcon: {
+    fontSize: 36,
   },
   title: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: '700',
-    color: '#1F2937',
+    color: colors.text.primary,
     marginBottom: 8,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
-    color: '#6B7280',
+    color: colors.text.secondary,
     textAlign: 'center',
     lineHeight: 24,
+    paddingHorizontal: 16,
   },
   errorContainer: {
     backgroundColor: '#FEF2F2',
-    borderRadius: 10,
-    padding: 12,
+    borderRadius: borderRadius.md,
+    padding: 14,
     marginBottom: 16,
+    borderLeftWidth: 4,
+    borderLeftColor: colors.error,
   },
   errorText: {
-    color: '#DC2626',
+    color: colors.error,
     fontSize: 14,
-    textAlign: 'center',
+    fontWeight: '500',
   },
-  form: {
-    flex: 1,
+  formCard: {
+    backgroundColor: colors.background.card,
+    borderRadius: borderRadius.lg,
+    padding: 20,
+    ...shadows.md,
   },
   passwordHints: {
-    backgroundColor: '#F3F4F6',
-    borderRadius: 10,
-    padding: 12,
-    marginTop: 8,
+    backgroundColor: colors.background.secondary,
+    borderRadius: borderRadius.md,
+    padding: 14,
+    marginTop: 12,
   },
   hintTitle: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '600',
-    color: '#374151',
-    marginBottom: 4,
+    color: colors.text.primary,
+    marginBottom: 6,
   },
   hint: {
     fontSize: 12,
-    color: '#6B7280',
+    color: colors.text.secondary,
     lineHeight: 18,
   },
   footer: {
@@ -259,15 +271,15 @@ const styles = StyleSheet.create({
   loginPrompt: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 16,
+    marginTop: 20,
   },
   loginText: {
-    fontSize: 14,
-    color: '#6B7280',
+    fontSize: 15,
+    color: colors.text.secondary,
   },
   loginLink: {
-    fontSize: 14,
-    color: '#4F46E5',
+    fontSize: 15,
+    color: colors.accent.primary,
     fontWeight: '600',
   },
 });

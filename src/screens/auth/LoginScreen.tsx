@@ -12,7 +12,9 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useForm, Controller} from 'react-hook-form';
 import {SafeAreaWrapper, Input, Button} from '../../components/ui';
 import {useAuthStore} from '../../store/useAuthStore';
+import {useWizardStore} from '../../store/useWizardStore';
 import {loginSchema, LoginFormData, safeZodResolver} from '../../utils/validation';
+import {colors, shadows, borderRadius} from '../../theme';
 import type {AuthStackParamList, RootStackParamList} from '../../types';
 
 type AuthNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Login'>;
@@ -21,10 +23,11 @@ type RootNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 export const LoginScreen: React.FC = () => {
   const authNavigation = useNavigation<AuthNavigationProp>();
   const rootNavigation = useNavigation<RootNavigationProp>();
-  const login = useAuthStore((state) => state.login);
-  const isLoading = useAuthStore((state) => state.isLoading);
-  const error = useAuthStore((state) => state.error);
-  const clearError = useAuthStore((state) => state.clearError);
+  const login = useAuthStore(state => state.login);
+  const isLoading = useAuthStore(state => state.isLoading);
+  const error = useAuthStore(state => state.error);
+  const clearError = useAuthStore(state => state.clearError);
+  const isWizardCompleted = useWizardStore(state => state.isCompleted);
 
   const {
     control,
@@ -43,11 +46,20 @@ export const LoginScreen: React.FC = () => {
     try {
       clearError();
       await login(data);
-      // Navigate to Result screen on success
-      rootNavigation.reset({
-        index: 0,
-        routes: [{name: 'Result'}],
-      });
+      // Auth First: Navigate based on wizard completion status
+      if (isWizardCompleted) {
+        // Returning user who completed wizard - go to Home
+        rootNavigation.reset({
+          index: 0,
+          routes: [{name: 'Home'}],
+        });
+      } else {
+        // User needs to complete wizard
+        rootNavigation.reset({
+          index: 0,
+          routes: [{name: 'Wizard'}],
+        });
+      }
     } catch (err) {
       // Error is handled by the store and displayed via error state
     }
@@ -64,14 +76,18 @@ export const LoginScreen: React.FC = () => {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <ScrollView
           contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled">
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}>
+          {/* Header with gradient accent */}
           <View style={styles.header}>
-            <View style={styles.lockIcon}>
-              <Text style={styles.lockEmoji}>🔐</Text>
+            <View style={styles.logoContainer}>
+              <View style={styles.logoGradient}>
+                <Text style={styles.logoIcon}>🔐</Text>
+              </View>
             </View>
             <Text style={styles.title}>Welcome Back</Text>
             <Text style={styles.subtitle}>
-              Log in to access your account and view your offers.
+              Log in to access your account and view your personalized offers.
             </Text>
           </View>
 
@@ -81,7 +97,8 @@ export const LoginScreen: React.FC = () => {
             </View>
           )}
 
-          <View style={styles.form}>
+          {/* Form Card */}
+          <View style={styles.formCard}>
             <Controller
               control={control}
               name="emailOrUsername"
@@ -152,49 +169,58 @@ const styles = StyleSheet.create({
     paddingTop: 48,
     paddingBottom: 32,
   },
-  lockIcon: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: '#EEF2FF',
+  logoContainer: {
+    marginBottom: 20,
+  },
+  logoGradient: {
+    width: 80,
+    height: 80,
+    borderRadius: 24,
+    backgroundColor: colors.gradient.start,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 16,
+    ...shadows.lg,
   },
-  lockEmoji: {
-    fontSize: 32,
+  logoIcon: {
+    fontSize: 36,
   },
   title: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: '700',
-    color: '#1F2937',
+    color: colors.text.primary,
     marginBottom: 8,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
-    color: '#6B7280',
+    color: colors.text.secondary,
     textAlign: 'center',
     lineHeight: 24,
+    paddingHorizontal: 16,
   },
   errorContainer: {
     backgroundColor: '#FEF2F2',
-    borderRadius: 10,
-    padding: 12,
+    borderRadius: borderRadius.md,
+    padding: 14,
     marginBottom: 16,
+    borderLeftWidth: 4,
+    borderLeftColor: colors.error,
   },
   errorText: {
-    color: '#DC2626',
+    color: colors.error,
     fontSize: 14,
-    textAlign: 'center',
+    fontWeight: '500',
   },
-  form: {
-    flex: 1,
+  formCard: {
+    backgroundColor: colors.background.card,
+    borderRadius: borderRadius.lg,
+    padding: 20,
+    ...shadows.md,
   },
   forgotPassword: {
     fontSize: 14,
-    color: '#4F46E5',
-    fontWeight: '500',
+    color: colors.accent.primary,
+    fontWeight: '600',
     textAlign: 'right',
     marginTop: 8,
   },
@@ -204,15 +230,15 @@ const styles = StyleSheet.create({
   signUpPrompt: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 16,
+    marginTop: 20,
   },
   signUpText: {
-    fontSize: 14,
-    color: '#6B7280',
+    fontSize: 15,
+    color: colors.text.secondary,
   },
   signUpLink: {
-    fontSize: 14,
-    color: '#4F46E5',
+    fontSize: 15,
+    color: colors.accent.primary,
     fontWeight: '600',
   },
 });
