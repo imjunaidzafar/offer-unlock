@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Switch,
   Alert,
+  Linking,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
@@ -56,6 +57,7 @@ export const SettingsScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const user = useAuthStore(state => state.user);
   const logout = useAuthStore(state => state.logout);
+  const deleteAccount = useAuthStore(state => state.deleteAccount);
   const resetWizard = useWizardStore(state => state.resetWizard);
   const wizardData = useWizardStore(state => state.data);
 
@@ -106,7 +108,7 @@ export const SettingsScreen: React.FC = () => {
           style: 'destructive',
           onPress: () => {
             resetWizard();
-            logout();
+            deleteAccount();
             navigation.reset({
               index: 0,
               routes: [{name: 'Auth'}],
@@ -115,6 +117,14 @@ export const SettingsScreen: React.FC = () => {
         },
       ],
     );
+  };
+
+  const handlePrivacyPolicy = () => {
+    Linking.openURL('https://offerunlock.com/privacy');
+  };
+
+  const handleTermsOfService = () => {
+    Linking.openURL('https://offerunlock.com/terms');
   };
 
   const fullName = `${wizardData.step1.firstName} ${wizardData.step1.lastName}`.trim() || 'User';
@@ -191,13 +201,19 @@ export const SettingsScreen: React.FC = () => {
             </View>
             <View style={[styles.infoRow, styles.settingRowBorder]}>
               <Text style={styles.infoLabel}>Build</Text>
-              <Text style={styles.infoValue}>2024.01.20</Text>
+              <Text style={styles.infoValue}>2026.01.20</Text>
             </View>
-            <TouchableOpacity style={[styles.infoRow, styles.settingRowBorder]}>
+            <TouchableOpacity
+              style={[styles.infoRow, styles.settingRowBorder]}
+              onPress={handlePrivacyPolicy}
+              activeOpacity={0.7}>
               <Text style={styles.infoLabel}>Privacy Policy</Text>
               <Text style={styles.infoArrow}>→</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.infoRow}>
+            <TouchableOpacity
+              style={styles.infoRow}
+              onPress={handleTermsOfService}
+              activeOpacity={0.7}>
               <Text style={styles.infoLabel}>Terms of Service</Text>
               <Text style={styles.infoArrow}>→</Text>
             </TouchableOpacity>
@@ -222,7 +238,7 @@ export const SettingsScreen: React.FC = () => {
         {/* Footer */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>Made with ❤️ by Offer Unlock</Text>
-          <Text style={styles.footerCopyright}>© 2024 All rights reserved</Text>
+          <Text style={styles.footerCopyright}>© 2026 All rights reserved</Text>
         </View>
       </ScrollView>
     </SafeAreaWrapper>
@@ -254,6 +270,8 @@ const styles = StyleSheet.create({
   backIcon: {
     fontSize: 20,
     color: colors.text.primary,
+    textAlign: 'center',
+    lineHeight: 22,
   },
   headerContent: {
     flex: 1,
