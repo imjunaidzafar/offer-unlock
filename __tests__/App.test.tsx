@@ -10,9 +10,9 @@ describe('App', () => {
   it('renders without crashing', async () => {
     const {getByText} = render(<App />);
 
-    // Wait for the app to render the wizard first step
+    // Wait for the app to render the login screen (Auth First pattern)
     await waitFor(() => {
-      expect(getByText('Personal Information')).toBeTruthy();
+      expect(getByText('Welcome Back')).toBeTruthy();
     }, {timeout: 5000});
   });
 });
