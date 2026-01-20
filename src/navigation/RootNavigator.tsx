@@ -5,6 +5,9 @@ import {WizardStack} from './WizardStack';
 import {AuthStack} from './AuthStack';
 import {ResultScreen} from '../screens/wizard/ResultScreen';
 import {HomeScreen} from '../screens/HomeScreen';
+import {CompareScreen} from '../screens/CompareScreen';
+import {SupportScreen} from '../screens/SupportScreen';
+import {SettingsScreen} from '../screens/SettingsScreen';
 import {useWizardStore, isWizardHydrated, onWizardHydration} from '../store/useWizardStore';
 import {useAuthStore, isAuthHydrated, onAuthHydration} from '../store/useAuthStore';
 
@@ -77,6 +80,9 @@ export const RootNavigator: React.FC = () => {
           gestureEnabled: false,
         }}
       />
+      <Stack.Screen name="Compare" component={CompareScreen} />
+      <Stack.Screen name="Support" component={SupportScreen} />
+      <Stack.Screen name="Settings" component={SettingsScreen} />
     </Stack.Navigator>
   );
 };

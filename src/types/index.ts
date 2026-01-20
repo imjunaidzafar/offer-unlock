@@ -83,6 +83,9 @@ export type RootStackParamList = {
   Wizard: undefined;
   Result: undefined;
   Home: undefined;
+  Compare: undefined;
+  Support: undefined;
+  Settings: undefined;
 };
 
 export type WizardStackParamList = {
