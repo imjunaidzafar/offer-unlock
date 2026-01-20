@@ -27,7 +27,6 @@ export const LoginScreen: React.FC = () => {
   const isLoading = useAuthStore(state => state.isLoading);
   const error = useAuthStore(state => state.error);
   const clearError = useAuthStore(state => state.clearError);
-  const isWizardCompleted = useWizardStore(state => state.isCompleted);
 
   const {
     control,
@@ -46,8 +45,10 @@ export const LoginScreen: React.FC = () => {
     try {
       clearError();
       await login(data);
+      // Read wizard completion status directly from store (not from stale closure)
+      const wizardCompleted = useWizardStore.getState().isCompleted;
       // Auth First: Navigate based on wizard completion status
-      if (isWizardCompleted) {
+      if (wizardCompleted) {
         // Returning user who completed wizard - go to Home
         rootNavigation.reset({
           index: 0,
