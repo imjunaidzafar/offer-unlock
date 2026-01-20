@@ -32,12 +32,11 @@ export const CompareScreen: React.FC = () => {
   const [selectedOffer, setSelectedOffer] = useState<string | null>(null);
   const wizardData = useWizardStore(state => state.data);
 
-  // Calculate all offers based on user's financial data
-  const calculatedOffers = useMemo(() => {
-    return calculateAllOffers(wizardData.step2);
-  }, [wizardData.step2]);
+  const calculatedOffers = useMemo(
+    () => calculateAllOffers(wizardData.step2),
+    [wizardData.step2],
+  );
 
-  // Build offer options with personalized rates
   const offerOptions: OfferOption[] = useMemo(() => {
     const {loan, creditCard, insurance} = calculatedOffers;
 

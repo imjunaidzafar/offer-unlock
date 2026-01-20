@@ -43,15 +43,12 @@ export const HomeScreen: React.FC = () => {
     navigation.navigate('Settings');
   };
 
-  // Calculate personalized offer based on user's financial data
-  const calculatedOffer = useMemo(() => {
-    return calculateOffer(wizardData.step2, wizardData.step3);
-  }, [wizardData.step2, wizardData.step3]);
+  const calculatedOffer = useMemo(
+    () => calculateOffer(wizardData.step2, wizardData.step3),
+    [wizardData.step2, wizardData.step3],
+  );
 
-  // Get display-friendly summary
-  const offer = useMemo(() => {
-    return getOfferSummary(calculatedOffer);
-  }, [calculatedOffer]);
+  const offer = useMemo(() => getOfferSummary(calculatedOffer), [calculatedOffer]);
 
   return (
     <SafeAreaWrapper>

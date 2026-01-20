@@ -33,19 +33,16 @@ export const ResultScreen: React.FC = () => {
   const resetWizard = useWizardStore(state => state.resetWizard);
   const logout = useAuthStore(state => state.logout);
 
-  // Animation values
   const checkmarkScale = useSharedValue(0);
   const cardOpacity = useSharedValue(0);
   const cardTranslateY = useSharedValue(30);
 
   useEffect(() => {
-    // Checkmark animation
     checkmarkScale.value = withSequence(
       withSpring(1.2, {damping: 8, stiffness: 200}),
       withSpring(1, {damping: 12, stiffness: 150}),
     );
 
-    // Card animation
     cardOpacity.value = withDelay(
       300,
       withTiming(1, {duration: 400, easing: Easing.out(Easing.ease)}),
@@ -65,16 +62,14 @@ export const ResultScreen: React.FC = () => {
     transform: [{translateY: cardTranslateY.value}],
   }));
 
-  // Calculate personalized offer based on user's financial data
-  const calculatedOffer = useMemo(() => {
-    return calculateOffer(wizardData.step2, wizardData.step3);
-  }, [wizardData.step2, wizardData.step3]);
+  const calculatedOffer = useMemo(
+    () => calculateOffer(wizardData.step2, wizardData.step3),
+    [wizardData.step2, wizardData.step3],
+  );
 
-  // Get display details for the offer
   const offer = useMemo(() => {
     const summary = getOfferSummary(calculatedOffer);
 
-    // Build detailed view based on offer type
     switch (calculatedOffer.type) {
       case 'loan':
         return {

@@ -19,27 +19,22 @@ export const RootNavigator: React.FC = () => {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    // Wait for both stores to be hydrated
     const checkHydration = () => {
       if (isAuthHydrated() && isWizardHydrated()) {
         setIsReady(true);
       }
     };
 
-    // Check immediately in case already hydrated
     checkHydration();
-
-    // Listen for hydration events
     onAuthHydration(checkHydration);
     onWizardHydration(checkHydration);
 
-    // Fallback timeout in case hydration callbacks don't fire
     const timer = setTimeout(() => setIsReady(true), 500);
     return () => clearTimeout(timer);
   }, []);
 
   if (!isReady) {
-    return null; // Splash screen handles this
+    return null;
   }
 
   // Auth First Flow:

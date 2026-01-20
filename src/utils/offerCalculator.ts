@@ -1,11 +1,6 @@
-/**
- * Offer Calculator
- * Calculates personalized offers based on user's financial profile
- */
-
 import type {Step2Data, Step3Data} from '../types';
 
-// Credit score APR mapping
+// APR rates by credit score
 const CREDIT_SCORE_APR: Record<string, {loan: number; creditCard: number}> = {
   excellent: {loan: 5.9, creditCard: 14.9},
   good: {loan: 8.9, creditCard: 17.9},
@@ -14,7 +9,6 @@ const CREDIT_SCORE_APR: Record<string, {loan: number; creditCard: number}> = {
   '': {loan: 12.9, creditCard: 21.9}, // Default
 };
 
-// Employment status multipliers
 const EMPLOYMENT_MULTIPLIER: Record<string, number> = {
   employed: 1.0,
   'self-employed': 0.85,
@@ -23,7 +17,6 @@ const EMPLOYMENT_MULTIPLIER: Record<string, number> = {
   '': 0.5, // Default
 };
 
-// Insurance base rates by credit score
 const INSURANCE_BASE_RATE: Record<string, number> = {
   excellent: 19,
   good: 29,
@@ -65,18 +58,12 @@ export interface InsuranceOffer {
 
 export type CalculatedOffer = LoanOffer | CreditCardOffer | InsuranceOffer;
 
-/**
- * Parse income string to number
- */
 const parseIncome = (incomeStr: string): number => {
   if (!incomeStr) return 0;
   const cleaned = incomeStr.replace(/[^0-9.]/g, '');
   return parseFloat(cleaned) || 0;
 };
 
-/**
- * Format currency
- */
 export const formatCurrency = (amount: number): string => {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -86,9 +73,6 @@ export const formatCurrency = (amount: number): string => {
   }).format(amount);
 };
 
-/**
- * Format currency with decimals
- */
 export const formatCurrencyDecimal = (amount: number): string => {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -98,10 +82,6 @@ export const formatCurrencyDecimal = (amount: number): string => {
   }).format(amount);
 };
 
-/**
- * Calculate monthly loan payment using amortization formula
- * P = L[c(1 + c)^n]/[(1 + c)^n - 1]
- */
 const calculateMonthlyPayment = (
   principal: number,
   annualRate: number,
@@ -117,9 +97,6 @@ const calculateMonthlyPayment = (
   return Math.round(payment * 100) / 100;
 };
 
-/**
- * Calculate Personal Loan Offer
- */
 export const calculateLoanOffer = (
   step2Data: Step2Data,
 ): LoanOffer => {
@@ -127,23 +104,12 @@ export const calculateLoanOffer = (
   const creditScore = step2Data.creditScoreRange || '';
   const employment = step2Data.employmentStatus || '';
 
-  // Base loan amount: 30% of annual income
   const baseLoanAmount = income * 0.3;
-
-  // Apply employment multiplier
   const multiplier = EMPLOYMENT_MULTIPLIER[employment] || 0.5;
   const maxAmount = Math.min(baseLoanAmount * multiplier, 50000);
-
-  // Round to nearest 1000
   const approvedAmount = Math.round(maxAmount / 1000) * 1000;
-
-  // Get APR based on credit score
   const apr = CREDIT_SCORE_APR[creditScore]?.loan || 12.9;
-
-  // Calculate term based on amount (higher amounts = longer terms)
   const term = approvedAmount <= 10000 ? 36 : approvedAmount <= 25000 ? 48 : 60;
-
-  // Calculate monthly payment
   const monthlyPayment = calculateMonthlyPayment(approvedAmount, apr, term);
 
   return {
@@ -160,9 +126,6 @@ export const calculateLoanOffer = (
   };
 };
 
-/**
- * Calculate Credit Card Offer
- */
 export const calculateCreditCardOffer = (
   step2Data: Step2Data,
 ): CreditCardOffer => {
@@ -170,20 +133,12 @@ export const calculateCreditCardOffer = (
   const creditScore = step2Data.creditScoreRange || '';
   const employment = step2Data.employmentStatus || '';
 
-  // Base credit limit: 15% of annual income
   const baseLimit = income * 0.15;
-
-  // Apply employment multiplier
   const multiplier = EMPLOYMENT_MULTIPLIER[employment] || 0.5;
   const calculatedLimit = Math.min(baseLimit * multiplier, 25000);
-
-  // Round to nearest 500
   const creditLimit = Math.round(calculatedLimit / 500) * 500;
-
-  // Get APR based on credit score
   const regularApr = CREDIT_SCORE_APR[creditScore]?.creditCard || 21.9;
 
-  // Intro APR and period based on credit score
   let introApr = 0;
   let introPeriod = 0;
   let cashBack = 1;
@@ -218,9 +173,6 @@ export const calculateCreditCardOffer = (
   };
 };
 
-/**
- * Calculate Insurance Offer
- */
 export const calculateInsuranceOffer = (
   step2Data: Step2Data,
 ): InsuranceOffer => {
@@ -228,24 +180,12 @@ export const calculateInsuranceOffer = (
   const creditScore = step2Data.creditScoreRange || '';
   const employment = step2Data.employmentStatus || '';
 
-  // Coverage amount: 10x annual income (standard recommendation)
   const baseCoverage = income * 10;
-
-  // Apply employment multiplier for coverage
   const multiplier = EMPLOYMENT_MULTIPLIER[employment] || 0.5;
   const calculatedCoverage = Math.min(baseCoverage * multiplier, 1000000);
-
-  // Round to nearest 50000
   const coverageAmount = Math.round(calculatedCoverage / 50000) * 50000;
-
-  // Get base rate from credit score
   const baseRate = INSURANCE_BASE_RATE[creditScore] || 39;
-
-  // Calculate monthly premium based on coverage
-  // Base rate is for $100k coverage, scale proportionally
   const monthlyPremium = Math.round((baseRate * (coverageAmount / 100000)) * 100) / 100;
-
-  // Term based on coverage amount
   const termYears = coverageAmount <= 250000 ? 10 : coverageAmount <= 500000 ? 20 : 30;
 
   return {
@@ -260,9 +200,6 @@ export const calculateInsuranceOffer = (
   };
 };
 
-/**
- * Calculate offer based on selected type
- */
 export const calculateOffer = (
   step2Data: Step2Data,
   step3Data: Step3Data,
@@ -281,9 +218,6 @@ export const calculateOffer = (
   }
 };
 
-/**
- * Get offer summary for display
- */
 export const getOfferSummary = (offer: CalculatedOffer): {
   title: string;
   amount: string;
@@ -323,9 +257,6 @@ export const getOfferSummary = (offer: CalculatedOffer): {
   }
 };
 
-/**
- * Calculate all offer types for comparison
- */
 export const calculateAllOffers = (
   step2Data: Step2Data,
 ): {

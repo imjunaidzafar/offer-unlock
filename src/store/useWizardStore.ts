@@ -102,13 +102,10 @@ export const useWizardStore = create<WizardState>()(
   ),
 );
 
-// Selector hooks for better performance
 export const useWizardStep = () => useWizardStore((state) => state.currentStep);
 export const useWizardData = () => useWizardStore((state) => state.data);
 export const useStep1Data = () => useWizardStore((state) => state.data.step1);
 export const useStep2Data = () => useWizardStore((state) => state.data.step2);
 export const useStep3Data = () => useWizardStore((state) => state.data.step3);
 export const useWizardCompleted = () => useWizardStore((state) => state.isCompleted);
-
-// Helper to check if wizard is completed (for use outside React components)
 export const isWizardCompletedSync = () => useWizardStore.getState().isCompleted;
