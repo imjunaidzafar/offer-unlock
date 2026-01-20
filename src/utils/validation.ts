@@ -1,28 +1,28 @@
 import {z} from 'zod';
-import type {FieldErrors, FieldValues, Resolver} from 'react-hook-form';
+import type {FieldErrors, Resolver} from 'react-hook-form';
 
 // Custom zodResolver that uses safeParse to avoid unhandled promise rejections
 export function safeZodResolver<T extends z.ZodType<any, any>>(
   schema: T,
 ): Resolver<z.infer<T>> {
-  return async (values) => {
+  return async (values): Promise<{values: z.infer<T>; errors: FieldErrors<z.infer<T>>}> => {
     const result = schema.safeParse(values);
     if (result.success) {
-      return {values: result.data, errors: {}};
+      return {values: result.data, errors: {} as FieldErrors<z.infer<T>>};
     }
 
-    const errors: FieldErrors<FieldValues> = {};
+    const errors: FieldErrors<z.infer<T>> = {} as FieldErrors<z.infer<T>>;
     for (const issue of result.error.issues) {
-      const path = issue.path.join('.');
+      const path = issue.path.join('.') as keyof z.infer<T>;
       if (!errors[path]) {
-        errors[path] = {
+        (errors as any)[path] = {
           type: issue.code,
           message: issue.message,
         };
       }
     }
 
-    return {values: {}, errors};
+    return {values: {} as z.infer<T>, errors};
   };
 }
 
@@ -119,7 +119,7 @@ export const step3Schema = z.object({
       {message: 'Please select a contact preference'},
     ),
   termsAccepted: z.literal(true, {
-    errorMap: () => ({message: 'You must accept the terms and conditions'}),
+    error: 'You must accept the terms and conditions',
   }),
 });
 
