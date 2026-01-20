@@ -71,7 +71,4 @@ yarn-error.log
 # Ruby bundler
 .bundle/
 
-# AI/Editor local files
-.agent/
-.cursorrules
-AI_LOG.md
+# AI/Editor local files (keeping AI_LOG.md, .agent/, .cursorrules for submission)

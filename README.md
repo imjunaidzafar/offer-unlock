@@ -5,11 +5,13 @@ A high-conversion mobile onboarding flow built with React Native CLI, demonstrat
 ## Features
 
 - **Multi-step Lead Wizard** (3 steps): Personal Info → Income Details → Preferences
-- **Auth Last Pattern**: Collects wizard data first, then requires sign-up (higher conversion)
+- **Auth First Pattern**: Sign Up/Login first, then wizard, then personalized offers
+- **Home Dashboard**: User dashboard with profile, offer summary, and quick actions
 - **Custom Fluid Progress Bar**: Smooth animated progress indicator built with Reanimated 3
 - **Draft Persistence**: Return to the same step if app is closed (MMKV storage)
 - **Comprehensive Validation**: Zod schemas with real-time error feedback
 - **Form State Management**: Zustand with persistence middleware
+- **Dynamic Offer Calculator**: Personalized offers based on income, credit score, employment
 
 ---
 
@@ -154,7 +156,7 @@ OfferUnlock/
 ├── src/
 │   ├── app/                    # App entry point
 │   ├── navigation/             # React Navigation configuration
-│   │   ├── RootNavigator.tsx   # Main navigator (Wizard → Auth → Result)
+│   │   ├── RootNavigator.tsx   # Main navigator (Auth → Wizard → Result → Home)
 │   │   ├── WizardStack.tsx     # Wizard steps navigation
 │   │   └── AuthStack.tsx       # Auth screens navigation
 │   ├── screens/
@@ -163,9 +165,13 @@ OfferUnlock/
 │   │   │   ├── Step2IncomeDetails.tsx
 │   │   │   ├── Step3Preferences.tsx
 │   │   │   └── ResultScreen.tsx
-│   │   └── auth/               # Authentication screens
-│   │       ├── SignUpScreen.tsx
-│   │       └── LoginScreen.tsx
+│   │   ├── auth/               # Authentication screens
+│   │   │   ├── LoginScreen.tsx
+│   │   │   └── SignUpScreen.tsx
+│   │   ├── HomeScreen.tsx      # User dashboard
+│   │   ├── CompareScreen.tsx   # Compare all offer types
+│   │   ├── SupportScreen.tsx   # FAQ and contact options
+│   │   └── SettingsScreen.tsx  # User settings and account
 │   ├── components/
 │   │   ├── ui/                 # Reusable UI components
 │   │   │   ├── Button.tsx
@@ -173,14 +179,19 @@ OfferUnlock/
 │   │   │   ├── Select.tsx
 │   │   │   ├── Checkbox.tsx
 │   │   │   └── SafeAreaWrapper.tsx
-│   │   └── wizard/
-│   │       └── FluidProgressBar.tsx  # Custom animated progress (UI TASK)
+│   │   ├── wizard/
+│   │   │   └── FluidProgressBar.tsx  # Custom animated progress (UI TASK)
+│   │   └── SplashScreen.tsx    # Animated splash screen
 │   ├── store/
 │   │   ├── useWizardStore.ts   # Wizard state + MMKV persistence
-│   │   ├── useAuthStore.ts     # Auth state (mock API)
+│   │   ├── useAuthStore.ts     # Auth state (mock API + user database)
 │   │   └── storage.ts          # MMKV configuration
 │   ├── utils/
-│   │   └── validation.ts       # Zod validation schemas
+│   │   ├── validation.ts       # Zod validation schemas
+│   │   └── offerCalculator.ts  # Dynamic offer calculations
+│   ├── theme/                  # Design tokens
+│   │   ├── colors.ts           # Color palette and gradients
+│   │   └── index.ts            # Theme exports
 │   └── types/
 │       └── index.ts            # TypeScript type definitions
 ├── __tests__/
@@ -215,12 +226,23 @@ const useWizardStore = create(
 - User returns to the same step they left
 - Form data is preserved until submission
 
-### Navigation Flow (Auth Last Pattern)
+### Navigation Flow (Auth First Pattern)
 
 ```
 App Start
     ↓
 [Check persisted state]
+    ↓
+┌─────────────────────────────────────────────┐
+│  AUTH (Login / Sign Up)                      │
+│  Username, Email, Phone, Password           │
+└─────────────────────────────────────────────┘
+    ↓ (authenticated)
+    ↓
+┌── Returning User? ──────────────────────────┐
+│  YES (wizard completed) → Go to HOME        │
+│  NO (new user) → Go to WIZARD               │
+└─────────────────────────────────────────────┘
     ↓
 ┌─────────────────────────────────────────────┐
 │  WIZARD                                      │
@@ -229,15 +251,17 @@ App Start
 └─────────────────────────────────────────────┘
     ↓ (completeWizard)
 ┌─────────────────────────────────────────────┐
-│  AUTH                                        │
-│  Sign Up (or Login)                          │
-│  Username, Email, Phone, Password           │
-└─────────────────────────────────────────────┘
-    ↓ (authenticated)
-┌─────────────────────────────────────────────┐
 │  RESULT                                      │
 │  "Offer Unlocked!" with personalized offer  │
 └─────────────────────────────────────────────┘
+    ↓
+┌─────────────────────────────────────────────┐
+│  HOME (Dashboard)                            │
+│  Profile, Offer Summary, Quick Actions      │
+│  Compare | Support | Settings               │
+└─────────────────────────────────────────────┘
+    ↓ (logout)
+    → Back to AUTH
 ```
 
 ### Custom UI Component: Fluid Progress Bar

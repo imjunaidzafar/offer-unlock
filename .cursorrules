@@ -1,0 +1,90 @@
+# OfferUnlock - AI Coding Standards & Governance
+
+## Project Overview
+OfferUnlock is a React Native CLI app implementing a high-conversion multi-step onboarding wizard with authentication.
+
+## Tech Stack (ENFORCED)
+- **Framework**: React Native CLI 0.74.x with TypeScript
+- **Navigation**: React Navigation v7 (native-stack)
+- **State Management**: Zustand with persist middleware
+- **Storage**: react-native-mmkv
+- **Forms**: react-hook-form + zod for validation
+- **Animations**: react-native-reanimated v3 (NO pre-built animation libraries for custom components)
+- **Testing**: Jest + React Native Testing Library
+
+## Architecture Rules
+
+### File Structure
+```
+src/
+├── app/           # Entry point only
+├── navigation/    # Navigation configuration
+├── screens/       # Screen components (one per file)
+├── components/    # Reusable UI components
+│   ├── ui/        # Generic components (Button, Input, etc.)
+│   └── wizard/    # Wizard-specific components
+├── store/         # Zustand stores
+├── hooks/         # Custom React hooks
+├── utils/         # Pure utility functions
+└── types/         # TypeScript types/interfaces
+```
+
+### Naming Conventions
+- Components: PascalCase (e.g., `FluidProgressBar.tsx`)
+- Hooks: camelCase with `use` prefix (e.g., `useWizardStore.ts`)
+- Utils: camelCase (e.g., `validation.ts`)
+- Types: PascalCase with descriptive names
+
+### Component Rules
+1. Use functional components with TypeScript
+2. Props must be typed with interfaces
+3. Use SafeAreaView or SafeAreaWrapper for all screens
+4. Handle keyboard avoiding for forms
+5. All interactive elements must have accessible labels
+
+### State Management Rules
+1. Use Zustand for global state
+2. Use react-hook-form for form state
+3. Persist wizard data to MMKV
+4. Clear persisted data only on successful completion
+
+### Animation Rules
+1. Use Reanimated's useSharedValue and useAnimatedStyle
+2. Prefer withSpring/withTiming over withSequence for simple animations
+3. Run animations on UI thread (worklets)
+4. NO pre-built progress bar libraries - build custom
+
+### Validation Rules
+1. Define all schemas in src/utils/validation.ts
+2. Use zod for schema definition
+3. Validate on blur and on submit
+4. Show inline error messages
+
+### Testing Rules
+1. Unit test all validation schemas
+2. Unit test store persistence logic
+3. Integration test navigation flows
+4. Mock MMKV and navigation in tests
+
+### Error Handling
+1. Handle network errors gracefully
+2. Show user-friendly error messages
+3. Log errors for debugging (console in dev)
+4. Never show raw error messages to users
+
+### Code Quality
+1. No `any` types - use proper TypeScript
+2. Prefer const over let
+3. Use early returns for guard clauses
+4. Keep functions under 50 lines
+5. Extract repeated logic into hooks/utils
+
+## DO NOT
+- Use class components
+- Use AsyncStorage (use MMKV instead)
+- Use pre-built progress bar libraries
+- Skip form validation
+- Use inline styles excessively
+- Commit console.log statements
+- Use `any` type
+- Ignore TypeScript errors
