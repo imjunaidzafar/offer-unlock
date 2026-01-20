@@ -1,8 +1,14 @@
-import React, {useState} from 'react';
+import React, {useState, useMemo} from 'react';
 import {View, Text, StyleSheet, ScrollView, TouchableOpacity} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {SafeAreaWrapper, Button} from '../components/ui';
+import {useWizardStore} from '../store/useWizardStore';
+import {
+  calculateAllOffers,
+  formatCurrency,
+  formatCurrencyDecimal,
+} from '../utils/offerCalculator';
 import {colors, shadows, borderRadius} from '../theme';
 import type {RootStackParamList} from '../types';
 
@@ -21,63 +27,78 @@ interface OfferOption {
   color: string;
 }
 
-const offerOptions: OfferOption[] = [
-  {
-    id: 'loan',
-    title: 'Personal Loan',
-    icon: '💰',
-    tagline: 'Flexible funds for any purpose',
-    features: [
-      'Fixed monthly payments',
-      'No collateral required',
-      'Quick approval process',
-      'Use for any purpose',
-    ],
-    rate: '5.9% - 12.9% APR',
-    amount: 'Up to $50,000',
-    term: '12 - 60 months',
-    highlight: 'Best for large purchases',
-    color: '#10B981',
-  },
-  {
-    id: 'credit-card',
-    title: 'Credit Card',
-    icon: '💳',
-    tagline: 'Rewards on every purchase',
-    features: [
-      '0% intro APR for 18 months',
-      'Cash back on purchases',
-      'No annual fee',
-      'Build credit history',
-    ],
-    rate: '0% intro, then 14.9%',
-    amount: 'Up to $10,000 limit',
-    term: 'Revolving credit',
-    highlight: 'Best for everyday spending',
-    color: '#7C3AED',
-  },
-  {
-    id: 'insurance',
-    title: 'Life Insurance',
-    icon: '🛡️',
-    tagline: 'Protect what matters most',
-    features: [
-      'Term & whole life options',
-      'Guaranteed acceptance',
-      'Lock in low rates',
-      'Tax-free death benefit',
-    ],
-    rate: 'From $19/month',
-    amount: 'Up to $1,000,000',
-    term: '10 - 30 year terms',
-    highlight: 'Best for family protection',
-    color: '#F59E0B',
-  },
-];
-
 export const CompareScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const [selectedOffer, setSelectedOffer] = useState<string | null>(null);
+  const wizardData = useWizardStore(state => state.data);
+
+  // Calculate all offers based on user's financial data
+  const calculatedOffers = useMemo(() => {
+    return calculateAllOffers(wizardData.step2);
+  }, [wizardData.step2]);
+
+  // Build offer options with personalized rates
+  const offerOptions: OfferOption[] = useMemo(() => {
+    const {loan, creditCard, insurance} = calculatedOffers;
+
+    return [
+      {
+        id: 'loan',
+        title: 'Personal Loan',
+        icon: '💰',
+        tagline: 'Flexible funds for any purpose',
+        features: [
+          `${formatCurrencyDecimal(loan.monthlyPayment)}/month payment`,
+          'No collateral required',
+          'Quick approval process',
+          'Use for any purpose',
+        ],
+        rate: `${loan.apr}% APR`,
+        amount: formatCurrency(loan.approvedAmount),
+        term: `${loan.term} months`,
+        highlight: 'Best for large purchases',
+        color: '#10B981',
+      },
+      {
+        id: 'credit-card',
+        title: 'Credit Card',
+        icon: '💳',
+        tagline: 'Rewards on every purchase',
+        features: [
+          creditCard.introPeriod > 0
+            ? `0% intro APR for ${creditCard.introPeriod} months`
+            : `${creditCard.regularApr}% APR`,
+          `${creditCard.cashBack}% cash back on purchases`,
+          'No annual fee',
+          'Build credit history',
+        ],
+        rate: creditCard.introPeriod > 0
+          ? `0% intro, then ${creditCard.regularApr}%`
+          : `${creditCard.regularApr}% APR`,
+        amount: `${formatCurrency(creditCard.creditLimit)} limit`,
+        term: 'Revolving credit',
+        highlight: 'Best for everyday spending',
+        color: '#7C3AED',
+      },
+      {
+        id: 'insurance',
+        title: 'Life Insurance',
+        icon: '🛡️',
+        tagline: 'Protect what matters most',
+        features: [
+          `${formatCurrencyDecimal(insurance.monthlyPremium)}/month premium`,
+          'Guaranteed acceptance',
+          'Lock in low rates',
+          'Tax-free death benefit',
+        ],
+        rate: `${formatCurrencyDecimal(insurance.monthlyPremium)}/month`,
+        amount: `${formatCurrency(insurance.coverageAmount)} coverage`,
+        term: `${insurance.termYears} year term`,
+        highlight: 'Best for family protection',
+        color: '#F59E0B',
+      },
+    ];
+  }, [calculatedOffers]);
 
   const handleBack = () => {
     navigation.goBack();
@@ -210,6 +231,8 @@ const styles = StyleSheet.create({
   backIcon: {
     fontSize: 20,
     color: colors.text.primary,
+    textAlign: 'center',
+    lineHeight: 22,
   },
   headerContent: {
     flex: 1,

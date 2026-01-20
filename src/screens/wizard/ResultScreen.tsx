@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useMemo} from 'react';
 import {View, Text, StyleSheet, ScrollView} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
@@ -14,6 +14,13 @@ import Animated, {
 import {SafeAreaWrapper, Button} from '../../components/ui';
 import {useWizardStore} from '../../store/useWizardStore';
 import {useAuthStore} from '../../store/useAuthStore';
+import {
+  calculateOffer,
+  getOfferSummary,
+  formatCurrency,
+  formatCurrencyDecimal,
+  type CalculatedOffer,
+} from '../../utils/offerCalculator';
 import {colors, shadows, borderRadius} from '../../theme';
 import type {RootStackParamList} from '../../types';
 
@@ -58,45 +65,39 @@ export const ResultScreen: React.FC = () => {
     transform: [{translateY: cardTranslateY.value}],
   }));
 
-  const getOfferDetails = () => {
-    const offerType = wizardData.step3.offerType;
-    switch (offerType) {
+  // Calculate personalized offer based on user's financial data
+  const calculatedOffer = useMemo(() => {
+    return calculateOffer(wizardData.step2, wizardData.step3);
+  }, [wizardData.step2, wizardData.step3]);
+
+  // Get display details for the offer
+  const offer = useMemo(() => {
+    const summary = getOfferSummary(calculatedOffer);
+
+    // Build detailed view based on offer type
+    switch (calculatedOffer.type) {
       case 'loan':
         return {
-          title: 'Personal Loan',
-          amount: '$15,000',
-          rate: '5.9% APR',
-          term: '36 months',
-          icon: '💰',
+          ...summary,
+          term: `${calculatedOffer.term} months`,
+          monthlyPayment: formatCurrencyDecimal(calculatedOffer.monthlyPayment),
         };
       case 'credit-card':
         return {
-          title: 'Premium Credit Card',
-          amount: '$10,000 limit',
-          rate: '0% intro APR',
-          term: '18 months',
-          icon: '💳',
+          ...summary,
+          term: calculatedOffer.introPeriod > 0
+            ? `${calculatedOffer.introPeriod} mo intro`
+            : 'No intro period',
+          cashBack: `${calculatedOffer.cashBack}% cash back`,
         };
       case 'insurance':
         return {
-          title: 'Life Insurance',
-          amount: '$500,000 coverage',
-          rate: '$29/month',
-          term: '20 year term',
-          icon: '🛡️',
-        };
-      default:
-        return {
-          title: 'Special Offer',
-          amount: '$10,000',
-          rate: 'Competitive rates',
-          term: 'Flexible terms',
-          icon: '🎁',
+          ...summary,
+          term: `${calculatedOffer.termYears} year term`,
+          monthlyPremium: formatCurrencyDecimal(calculatedOffer.monthlyPremium),
         };
     }
-  };
-
-  const offer = getOfferDetails();
+  }, [calculatedOffer]);
 
   const handleGoToDashboard = () => {
     navigation.reset({
@@ -157,6 +158,11 @@ export const ResultScreen: React.FC = () => {
               <Text style={styles.offerDetailLabel}>Term</Text>
               <Text style={styles.offerDetailValue}>{offer.term}</Text>
             </View>
+          </View>
+
+          {/* Additional Details */}
+          <View style={styles.additionalInfo}>
+            <Text style={styles.additionalInfoText}>{offer.details}</Text>
           </View>
 
           <View style={styles.offerActions}>
@@ -296,6 +302,15 @@ const styles = StyleSheet.create({
   offerDetailDivider: {
     width: 1,
     backgroundColor: colors.border.default,
+  },
+  additionalInfo: {
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  additionalInfoText: {
+    fontSize: 14,
+    color: colors.text.secondary,
+    fontWeight: '500',
   },
   offerActions: {
     gap: 12,

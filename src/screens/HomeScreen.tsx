@@ -1,10 +1,11 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {View, Text, StyleSheet, ScrollView, TouchableOpacity} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {SafeAreaWrapper, Button} from '../components/ui';
 import {useAuthStore} from '../store/useAuthStore';
-import {useWizardStore, useWizardData} from '../store/useWizardStore';
+import {useWizardStore} from '../store/useWizardStore';
+import {calculateOffer, getOfferSummary, type CalculatedOffer} from '../utils/offerCalculator';
 import {colors, shadows, borderRadius} from '../theme';
 import type {RootStackParamList} from '../types';
 
@@ -42,41 +43,15 @@ export const HomeScreen: React.FC = () => {
     navigation.navigate('Settings');
   };
 
-  const getOfferDetails = () => {
-    const offerType = wizardData.step3.offerType;
-    switch (offerType) {
-      case 'loan':
-        return {
-          title: 'Personal Loan',
-          amount: '$15,000',
-          rate: '5.9% APR',
-          icon: '💰',
-        };
-      case 'credit-card':
-        return {
-          title: 'Premium Credit Card',
-          amount: '$10,000 Limit',
-          rate: '0% Intro APR',
-          icon: '💳',
-        };
-      case 'insurance':
-        return {
-          title: 'Life Insurance',
-          amount: '$500,000 Coverage',
-          rate: '$29/month',
-          icon: '🛡️',
-        };
-      default:
-        return {
-          title: 'Special Offer',
-          amount: 'Exclusive Deal',
-          rate: 'Limited Time',
-          icon: '🎁',
-        };
-    }
-  };
+  // Calculate personalized offer based on user's financial data
+  const calculatedOffer = useMemo(() => {
+    return calculateOffer(wizardData.step2, wizardData.step3);
+  }, [wizardData.step2, wizardData.step3]);
 
-  const offer = getOfferDetails();
+  // Get display-friendly summary
+  const offer = useMemo(() => {
+    return getOfferSummary(calculatedOffer);
+  }, [calculatedOffer]);
 
   return (
     <SafeAreaWrapper>
@@ -87,7 +62,9 @@ export const HomeScreen: React.FC = () => {
         <View style={styles.header}>
           <View style={styles.headerGradient}>
             <Text style={styles.greeting}>Welcome back,</Text>
-            <Text style={styles.username}>{user?.username || 'User'}</Text>
+            <Text style={styles.username}>
+              {(user?.username || 'User').charAt(0).toUpperCase() + (user?.username || 'User').slice(1)}
+            </Text>
           </View>
         </View>
 
@@ -131,6 +108,7 @@ export const HomeScreen: React.FC = () => {
             <View style={styles.offerBadge}>
               <Text style={styles.offerBadgeText}>{offer.rate}</Text>
             </View>
+            <Text style={styles.offerDetailsText}>{offer.details}</Text>
           </View>
           <Button
             title="View Offer Details"
@@ -289,6 +267,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: colors.success,
+  },
+  offerDetailsText: {
+    fontSize: 13,
+    color: colors.text.secondary,
+    marginTop: 8,
   },
   viewOfferButton: {
     marginTop: 8,
