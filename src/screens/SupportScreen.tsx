@@ -239,6 +239,8 @@ const styles = StyleSheet.create({
   backIcon: {
     fontSize: 20,
     color: colors.text.primary,
+    textAlign: 'center',
+    lineHeight: 22,
   },
   headerContent: {
     flex: 1,
