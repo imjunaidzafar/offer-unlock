@@ -7,6 +7,7 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
+import {colors, shadows, borderRadius} from '../../theme';
 
 interface ButtonProps {
   title: string;
@@ -89,7 +90,7 @@ export const Button: React.FC<ButtonProps> = ({
       accessibilityState={{disabled: isDisabled}}>
       {loading ? (
         <ActivityIndicator
-          color={variant === 'outline' ? '#4F46E5' : '#FFFFFF'}
+          color={variant === 'outline' ? colors.accent.primary : colors.text.inverse}
           size="small"
         />
       ) : (
@@ -103,37 +104,40 @@ const styles = StyleSheet.create({
   button: {
     paddingVertical: 16,
     paddingHorizontal: 24,
-    borderRadius: 12,
+    borderRadius: borderRadius.lg,
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 56,
   },
   buttonPrimary: {
-    backgroundColor: '#4F46E5',
+    backgroundColor: colors.accent.primary,
+    ...shadows.md,
   },
   buttonSecondary: {
-    backgroundColor: '#6B7280',
+    backgroundColor: colors.text.secondary,
+    ...shadows.sm,
   },
   buttonOutline: {
     backgroundColor: 'transparent',
     borderWidth: 2,
-    borderColor: '#4F46E5',
+    borderColor: colors.accent.primary,
   },
   buttonDisabled: {
-    backgroundColor: '#D1D5DB',
-    borderColor: '#D1D5DB',
+    backgroundColor: colors.border.default,
+    borderColor: colors.border.default,
+    ...shadows.sm,
   },
   buttonText: {
     fontSize: 16,
     fontWeight: '600',
   },
   buttonTextDefault: {
-    color: '#FFFFFF',
+    color: colors.text.inverse,
   },
   buttonTextOutline: {
-    color: '#4F46E5',
+    color: colors.accent.primary,
   },
   buttonTextDisabled: {
-    color: '#9CA3AF',
+    color: colors.text.muted,
   },
 });

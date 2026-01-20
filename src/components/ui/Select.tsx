@@ -8,6 +8,7 @@ import {
   FlatList,
   ViewStyle,
 } from 'react-native';
+import {colors, shadows, borderRadius} from '../../theme';
 
 interface SelectOption {
   label: string;
@@ -92,6 +93,9 @@ export const Select: React.FC<SelectProps> = ({
                     ]}>
                     {item.label}
                   </Text>
+                  {item.value === value && (
+                    <Text style={styles.checkmark}>✓</Text>
+                  )}
                 </TouchableOpacity>
               )}
             />
@@ -109,11 +113,11 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#374151',
+    color: colors.text.primary,
     marginBottom: 6,
   },
   labelError: {
-    color: '#EF4444',
+    color: colors.error,
   },
   selectButton: {
     flexDirection: 'row',
@@ -122,29 +126,30 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 16,
     borderWidth: 1.5,
-    borderRadius: 10,
-    backgroundColor: '#FFFFFF',
+    borderRadius: borderRadius.md,
+    backgroundColor: colors.background.card,
+    ...shadows.sm,
   },
   selectButtonDefault: {
-    borderColor: '#D1D5DB',
+    borderColor: colors.border.default,
   },
   selectButtonError: {
-    borderColor: '#EF4444',
+    borderColor: colors.error,
   },
   selectText: {
     fontSize: 16,
-    color: '#1F2937',
+    color: colors.text.primary,
   },
   placeholderText: {
-    color: '#9CA3AF',
+    color: colors.text.muted,
   },
   chevron: {
     fontSize: 12,
-    color: '#6B7280',
+    color: colors.text.secondary,
   },
   errorText: {
     fontSize: 12,
-    color: '#EF4444',
+    color: colors.error,
     marginTop: 4,
   },
   modalOverlay: {
@@ -154,34 +159,43 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   modalContent: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
+    backgroundColor: colors.background.card,
+    borderRadius: borderRadius.xl,
     maxHeight: '60%',
     overflow: 'hidden',
+    ...shadows.lg,
   },
   modalTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1F2937',
+    color: colors.text.primary,
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: colors.border.default,
   },
   option: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingVertical: 16,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: colors.background.secondary,
   },
   optionSelected: {
-    backgroundColor: '#EEF2FF',
+    backgroundColor: '#F3E8FF',
   },
   optionText: {
     fontSize: 16,
-    color: '#374151',
+    color: colors.text.primary,
   },
   optionTextSelected: {
-    color: '#4F46E5',
-    fontWeight: '500',
+    color: colors.accent.primary,
+    fontWeight: '600',
+  },
+  checkmark: {
+    fontSize: 16,
+    color: colors.accent.primary,
+    fontWeight: '700',
   },
 });

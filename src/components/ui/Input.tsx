@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   ViewStyle,
 } from 'react-native';
+import {colors, shadows, borderRadius} from '../../theme';
 
 interface InputProps extends Omit<TextInputProps, 'style'> {
   label: string;
@@ -37,9 +38,9 @@ export const Input: React.FC<InputProps> = ({
   };
 
   const getBorderColor = () => {
-    if (error) return '#EF4444';
-    if (isFocused) return '#4F46E5';
-    return '#D1D5DB';
+    if (error) return colors.error;
+    if (isFocused) return colors.accent.primary;
+    return colors.border.default;
   };
 
   return (
@@ -52,7 +53,7 @@ export const Input: React.FC<InputProps> = ({
           onFocus={handleFocus}
           onBlur={handleBlur}
           secureTextEntry={secureTextEntry && !isPasswordVisible}
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={colors.text.muted}
           accessibilityLabel={label}
         />
         {secureTextEntry && (
@@ -60,7 +61,7 @@ export const Input: React.FC<InputProps> = ({
             onPress={togglePasswordVisibility}
             style={styles.eyeButton}
             accessibilityLabel={isPasswordVisible ? 'Hide password' : 'Show password'}>
-            <Text style={styles.eyeText}>{isPasswordVisible ? 'Hide' : 'Show'}</Text>
+            <Text style={styles.eyeText}>{isPasswordVisible ? '🙈' : '👁️'}</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -76,38 +77,37 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#374151',
+    color: colors.text.primary,
     marginBottom: 6,
   },
   labelError: {
-    color: '#EF4444',
+    color: colors.error,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1.5,
-    borderRadius: 10,
-    backgroundColor: '#FFFFFF',
+    borderRadius: borderRadius.md,
+    backgroundColor: colors.background.card,
+    ...shadows.sm,
   },
   input: {
     flex: 1,
     paddingVertical: 14,
     paddingHorizontal: 16,
     fontSize: 16,
-    color: '#1F2937',
+    color: colors.text.primary,
   },
   eyeButton: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 14,
     paddingVertical: 14,
   },
   eyeText: {
-    color: '#4F46E5',
-    fontWeight: '500',
-    fontSize: 14,
+    fontSize: 18,
   },
   errorText: {
     fontSize: 12,
-    color: '#EF4444',
+    color: colors.error,
     marginTop: 4,
   },
 });

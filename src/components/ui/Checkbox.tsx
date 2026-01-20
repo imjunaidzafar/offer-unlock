@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ViewStyle,
 } from 'react-native';
+import {colors, shadows, borderRadius} from '../../theme';
 
 interface CheckboxProps {
   label: string | React.ReactNode;
@@ -58,41 +59,42 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   checkbox: {
-    width: 24,
-    height: 24,
-    borderRadius: 6,
+    width: 26,
+    height: 26,
+    borderRadius: borderRadius.sm,
     borderWidth: 2,
-    borderColor: '#D1D5DB',
+    borderColor: colors.border.default,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.background.card,
+    ...shadows.sm,
   },
   checkboxChecked: {
-    backgroundColor: '#4F46E5',
-    borderColor: '#4F46E5',
+    backgroundColor: colors.accent.primary,
+    borderColor: colors.accent.primary,
   },
   checkboxError: {
-    borderColor: '#EF4444',
+    borderColor: colors.error,
   },
   checkmark: {
-    color: '#FFFFFF',
-    fontSize: 14,
+    color: colors.text.inverse,
+    fontSize: 16,
     fontWeight: '700',
   },
   label: {
     flex: 1,
     fontSize: 14,
-    color: '#374151',
-    lineHeight: 20,
+    color: colors.text.primary,
+    lineHeight: 22,
   },
   labelContainer: {
     flex: 1,
   },
   errorText: {
     fontSize: 12,
-    color: '#EF4444',
+    color: colors.error,
     marginTop: 4,
-    marginLeft: 36,
+    marginLeft: 38,
   },
 });
