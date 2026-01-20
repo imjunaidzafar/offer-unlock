@@ -15,16 +15,22 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import {SafeAreaWrapper, Input, Button} from '../../components/ui';
 import {FluidProgressBar} from '../../components/wizard/FluidProgressBar';
 import {useWizardStore, useStep1Data} from '../../store/useWizardStore';
+import {useAuthStore} from '../../store/useAuthStore';
 import {step1Schema, Step1FormData, safeZodResolver} from '../../utils/validation';
-import type {WizardStackParamList} from '../../types';
+import {colors, shadows, borderRadius} from '../../theme';
+import type {WizardStackParamList, RootStackParamList} from '../../types';
 
-type NavigationProp = NativeStackNavigationProp<WizardStackParamList, 'Step1'>;
+type WizardNavigationProp = NativeStackNavigationProp<WizardStackParamList, 'Step1'>;
+type RootNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export const Step1PersonalInfo: React.FC = () => {
-  const navigation = useNavigation<NavigationProp>();
+  const wizardNavigation = useNavigation<WizardNavigationProp>();
+  const rootNavigation = useNavigation<RootNavigationProp>();
   const step1Data = useStep1Data();
-  const updateStep1 = useWizardStore((state) => state.updateStep1);
-  const setCurrentStep = useWizardStore((state) => state.setCurrentStep);
+  const updateStep1 = useWizardStore(state => state.updateStep1);
+  const setCurrentStep = useWizardStore(state => state.setCurrentStep);
+  const resetWizard = useWizardStore(state => state.resetWizard);
+  const logout = useAuthStore(state => state.logout);
 
   const [showDatePicker, setShowDatePicker] = useState(false);
 
@@ -49,7 +55,6 @@ export const Step1PersonalInfo: React.FC = () => {
   const watchedValuesRef = React.useRef(watchedValues);
 
   useEffect(() => {
-    // Only update if values actually changed to prevent infinite loops
     const hasChanged =
       watchedValuesRef.current.firstName !== watchedValues.firstName ||
       watchedValuesRef.current.lastName !== watchedValues.lastName ||
@@ -67,11 +72,20 @@ export const Step1PersonalInfo: React.FC = () => {
 
   const onSubmit = (data: Step1FormData) => {
     updateStep1(data);
-    navigation.navigate('Step2');
+    wizardNavigation.navigate('Step2');
+  };
+
+  const handleBack = () => {
+    // Go back to auth (logout user)
+    logout();
+    resetWizard();
+    rootNavigation.reset({
+      index: 0,
+      routes: [{name: 'Auth'}],
+    });
   };
 
   const handleDateChange = (event: any, selectedDate?: Date) => {
-    // On Android, close picker after selection
     if (Platform.OS !== 'ios') {
       setShowDatePicker(false);
     }
@@ -105,16 +119,24 @@ export const Step1PersonalInfo: React.FC = () => {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <ScrollView
           contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled">
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}>
           <FluidProgressBar currentStep={1} totalSteps={3} />
 
           <View style={styles.content}>
-            <Text style={styles.title}>Personal Information</Text>
-            <Text style={styles.subtitle}>
-              Tell us a bit about yourself to unlock your personalized offer.
-            </Text>
+            {/* Header */}
+            <View style={styles.header}>
+              <View style={styles.iconContainer}>
+                <Text style={styles.icon}>👤</Text>
+              </View>
+              <Text style={styles.title}>Personal Information</Text>
+              <Text style={styles.subtitle}>
+                Tell us a bit about yourself to unlock your personalized offer.
+              </Text>
+            </View>
 
-            <View style={styles.form}>
+            {/* Form Card */}
+            <View style={styles.formCard}>
               <Controller
                 control={control}
                 name="firstName"
@@ -157,14 +179,14 @@ export const Step1PersonalInfo: React.FC = () => {
                     <Text
                       style={[
                         styles.dateLabel,
-                        errors.dateOfBirth ? styles.dateLabelError : undefined,
+                        errors.dateOfBirth && styles.dateLabelError,
                       ]}>
                       Date of Birth
                     </Text>
                     <TouchableOpacity
                       style={[
                         styles.dateButton,
-                        errors.dateOfBirth ? styles.dateButtonError : undefined,
+                        errors.dateOfBirth && styles.dateButtonError,
                       ]}
                       onPress={() => setShowDatePicker(true)}
                       activeOpacity={0.7}
@@ -173,10 +195,11 @@ export const Step1PersonalInfo: React.FC = () => {
                       <Text
                         style={[
                           styles.dateText,
-                          !value ? styles.datePlaceholder : undefined,
+                          !value && styles.datePlaceholder,
                         ]}>
                         {value ? formatDate(value) : 'Select your date of birth'}
                       </Text>
+                      <Text style={styles.calendarIcon}>📅</Text>
                     </TouchableOpacity>
                     {errors.dateOfBirth && (
                       <Text style={styles.errorText}>
@@ -193,11 +216,7 @@ export const Step1PersonalInfo: React.FC = () => {
                           </TouchableOpacity>
                         </View>
                         <DateTimePicker
-                          value={
-                            value
-                              ? new Date(value)
-                              : getMaxDate()
-                          }
+                          value={value ? new Date(value) : getMaxDate()}
                           mode="date"
                           display="spinner"
                           onChange={handleDateChange}
@@ -228,9 +247,16 @@ export const Step1PersonalInfo: React.FC = () => {
 
           <View style={styles.footer}>
             <Button
+              title="Back"
+              onPress={handleBack}
+              variant="outline"
+              style={styles.backButton}
+            />
+            <Button
               title="Continue"
               onPress={handleSubmit(onSubmit)}
               disabled={!isValid}
+              style={styles.continueButton}
             />
           </View>
         </ScrollView>
@@ -249,82 +275,112 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 24,
-    paddingTop: 24,
+    paddingTop: 16,
+  },
+  header: {
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  iconContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: 20,
+    backgroundColor: colors.gradient.start,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+    ...shadows.md,
+  },
+  icon: {
+    fontSize: 28,
   },
   title: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#1F2937',
+    color: colors.text.primary,
     marginBottom: 8,
+    textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
-    color: '#6B7280',
+    color: colors.text.secondary,
     lineHeight: 24,
-    marginBottom: 32,
+    textAlign: 'center',
+    paddingHorizontal: 16,
   },
-  form: {
-    flex: 1,
+  formCard: {
+    backgroundColor: colors.background.card,
+    borderRadius: borderRadius.lg,
+    padding: 20,
+    ...shadows.md,
   },
   dateContainer: {
-    marginBottom: 16,
+    marginBottom: 8,
   },
   dateLabel: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#374151',
+    color: colors.text.primary,
     marginBottom: 6,
   },
   dateLabelError: {
-    color: '#EF4444',
+    color: colors.error,
   },
   dateButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingVertical: 14,
     paddingHorizontal: 16,
     borderWidth: 1.5,
-    borderRadius: 10,
-    borderColor: '#D1D5DB',
-    backgroundColor: '#FFFFFF',
+    borderRadius: borderRadius.md,
+    borderColor: colors.border.default,
+    backgroundColor: colors.background.card,
   },
   dateButtonError: {
-    borderColor: '#EF4444',
+    borderColor: colors.error,
   },
   dateText: {
     fontSize: 16,
-    color: '#1F2937',
+    color: colors.text.primary,
+    flex: 1,
   },
   datePlaceholder: {
-    color: '#9CA3AF',
+    color: colors.text.muted,
+  },
+  calendarIcon: {
+    fontSize: 18,
+    marginLeft: 8,
   },
   errorText: {
     fontSize: 12,
-    color: '#EF4444',
+    color: colors.error,
     marginTop: 4,
   },
   datePickerContainer: {
-    backgroundColor: '#F9FAFB',
-    borderRadius: 12,
+    backgroundColor: colors.background.secondary,
+    borderRadius: borderRadius.md,
     marginTop: 8,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border.default,
   },
   datePickerHeader: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.background.card,
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: colors.border.default,
     alignItems: 'flex-end',
   },
   datePickerDoneButton: {
     paddingHorizontal: 16,
     paddingVertical: 6,
-    backgroundColor: '#4F46E5',
-    borderRadius: 6,
+    backgroundColor: colors.accent.primary,
+    borderRadius: borderRadius.sm,
   },
   datePickerDoneText: {
-    color: '#FFFFFF',
+    color: colors.text.inverse,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -332,7 +388,15 @@ const styles = StyleSheet.create({
     height: 180,
   },
   footer: {
+    flexDirection: 'row',
     paddingHorizontal: 24,
     paddingVertical: 16,
+    gap: 12,
+  },
+  backButton: {
+    flex: 1,
+  },
+  continueButton: {
+    flex: 2,
   },
 });

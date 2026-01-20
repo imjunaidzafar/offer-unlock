@@ -14,7 +14,8 @@ import {SafeAreaWrapper, Input, Button, Select} from '../../components/ui';
 import {FluidProgressBar} from '../../components/wizard/FluidProgressBar';
 import {useWizardStore, useStep2Data} from '../../store/useWizardStore';
 import {step2Schema, Step2FormData, safeZodResolver} from '../../utils/validation';
-import type {WizardStackParamList} from '../../types';
+import {colors, shadows, borderRadius} from '../../theme';
+import type {WizardStackParamList, Step2Data} from '../../types';
 
 type NavigationProp = NativeStackNavigationProp<WizardStackParamList, 'Step2'>;
 
@@ -35,8 +36,8 @@ const creditScoreOptions = [
 export const Step2IncomeDetails: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const step2Data = useStep2Data();
-  const updateStep2 = useWizardStore((state) => state.updateStep2);
-  const setCurrentStep = useWizardStore((state) => state.setCurrentStep);
+  const updateStep2 = useWizardStore(state => state.updateStep2);
+  const setCurrentStep = useWizardStore(state => state.setCurrentStep);
 
   const {
     control,
@@ -65,7 +66,7 @@ export const Step2IncomeDetails: React.FC = () => {
 
     if (hasChanged) {
       watchedValuesRef.current = watchedValues;
-      updateStep2(watchedValues);
+      updateStep2(watchedValues as Step2Data);
     }
   }, [watchedValues, updateStep2]);
 
@@ -74,7 +75,7 @@ export const Step2IncomeDetails: React.FC = () => {
   }, [setCurrentStep]);
 
   const onSubmit = (data: Step2FormData) => {
-    updateStep2(data);
+    updateStep2(data as Step2Data);
     navigation.navigate('Step3');
   };
 
@@ -83,11 +84,9 @@ export const Step2IncomeDetails: React.FC = () => {
   };
 
   const formatCurrency = (value: string) => {
-    // Remove non-numeric characters except decimal point
     const numericValue = value.replace(/[^0-9.]/g, '');
     if (!numericValue) return '';
 
-    // Format with commas
     const parts = numericValue.split('.');
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     return parts.join('.');
@@ -100,17 +99,24 @@ export const Step2IncomeDetails: React.FC = () => {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <ScrollView
           contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled">
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}>
           <FluidProgressBar currentStep={2} totalSteps={3} />
 
           <View style={styles.content}>
-            <Text style={styles.title}>Income Details</Text>
-            <Text style={styles.subtitle}>
-              Help us understand your financial profile to find the best offers
-              for you.
-            </Text>
+            {/* Header */}
+            <View style={styles.header}>
+              <View style={styles.iconContainer}>
+                <Text style={styles.icon}>💼</Text>
+              </View>
+              <Text style={styles.title}>Income Details</Text>
+              <Text style={styles.subtitle}>
+                Help us understand your financial profile to find the best offers for you.
+              </Text>
+            </View>
 
-            <View style={styles.form}>
+            {/* Form Card */}
+            <View style={styles.formCard}>
               <Controller
                 control={control}
                 name="employmentStatus"
@@ -130,15 +136,20 @@ export const Step2IncomeDetails: React.FC = () => {
                 control={control}
                 name="annualIncome"
                 render={({field: {onChange, onBlur, value}}) => (
-                  <Input
-                    label="Annual Income"
-                    placeholder="e.g., 75,000"
-                    value={formatCurrency(value)}
-                    onChangeText={(text) => onChange(text.replace(/[^0-9.]/g, ''))}
-                    onBlur={onBlur}
-                    error={errors.annualIncome?.message}
-                    keyboardType="numeric"
-                  />
+                  <View style={styles.incomeContainer}>
+                    <Input
+                      label="Annual Income"
+                      placeholder="e.g., 75,000"
+                      value={formatCurrency(value)}
+                      onChangeText={text => onChange(text.replace(/[^0-9.]/g, ''))}
+                      onBlur={onBlur}
+                      error={errors.annualIncome?.message}
+                      keyboardType="numeric"
+                    />
+                    <View style={styles.currencyBadge}>
+                      <Text style={styles.currencyText}>$</Text>
+                    </View>
+                  </View>
                 )}
               />
 
@@ -156,6 +167,14 @@ export const Step2IncomeDetails: React.FC = () => {
                   />
                 )}
               />
+            </View>
+
+            {/* Info Card */}
+            <View style={styles.infoCard}>
+              <Text style={styles.infoIcon}>🔒</Text>
+              <Text style={styles.infoText}>
+                Your information is secure and will only be used to personalize your offer.
+              </Text>
             </View>
           </View>
 
@@ -189,22 +208,79 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 24,
-    paddingTop: 24,
+    paddingTop: 16,
+  },
+  header: {
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  iconContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: 20,
+    backgroundColor: colors.accent.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+    ...shadows.md,
+  },
+  icon: {
+    fontSize: 28,
   },
   title: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#1F2937',
+    color: colors.text.primary,
     marginBottom: 8,
+    textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
-    color: '#6B7280',
+    color: colors.text.secondary,
     lineHeight: 24,
-    marginBottom: 32,
+    textAlign: 'center',
+    paddingHorizontal: 16,
   },
-  form: {
+  formCard: {
+    backgroundColor: colors.background.card,
+    borderRadius: borderRadius.lg,
+    padding: 20,
+    ...shadows.md,
+  },
+  incomeContainer: {
+    position: 'relative',
+  },
+  currencyBadge: {
+    position: 'absolute',
+    right: 16,
+    top: 38,
+    backgroundColor: colors.background.secondary,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: borderRadius.sm,
+  },
+  currencyText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text.secondary,
+  },
+  infoCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#EDE9FE',
+    borderRadius: borderRadius.md,
+    padding: 14,
+    marginTop: 16,
+  },
+  infoIcon: {
+    fontSize: 20,
+    marginRight: 12,
+  },
+  infoText: {
     flex: 1,
+    fontSize: 13,
+    color: colors.accent.primary,
+    lineHeight: 18,
   },
   footer: {
     flexDirection: 'row',

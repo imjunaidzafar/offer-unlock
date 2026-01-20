@@ -7,7 +7,8 @@ import {SafeAreaWrapper, Button, Select, Checkbox} from '../../components/ui';
 import {FluidProgressBar} from '../../components/wizard/FluidProgressBar';
 import {useWizardStore, useStep3Data} from '../../store/useWizardStore';
 import {step3Schema, Step3FormData, safeZodResolver} from '../../utils/validation';
-import type {WizardStackParamList, RootStackParamList} from '../../types';
+import {colors, shadows, borderRadius} from '../../theme';
+import type {WizardStackParamList, RootStackParamList, Step3Data} from '../../types';
 
 type WizardNavigationProp = NativeStackNavigationProp<WizardStackParamList, 'Step3'>;
 type RootNavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -28,9 +29,9 @@ export const Step3Preferences: React.FC = () => {
   const wizardNavigation = useNavigation<WizardNavigationProp>();
   const rootNavigation = useNavigation<RootNavigationProp>();
   const step3Data = useStep3Data();
-  const updateStep3 = useWizardStore((state) => state.updateStep3);
-  const setCurrentStep = useWizardStore((state) => state.setCurrentStep);
-  const completeWizard = useWizardStore((state) => state.completeWizard);
+  const updateStep3 = useWizardStore(state => state.updateStep3);
+  const setCurrentStep = useWizardStore(state => state.setCurrentStep);
+  const completeWizard = useWizardStore(state => state.completeWizard);
 
   const {
     control,
@@ -59,7 +60,7 @@ export const Step3Preferences: React.FC = () => {
 
     if (hasChanged) {
       watchedValuesRef.current = watchedValues;
-      updateStep3(watchedValues);
+      updateStep3(watchedValues as Step3Data);
     }
   }, [watchedValues, updateStep3]);
 
@@ -68,12 +69,12 @@ export const Step3Preferences: React.FC = () => {
   }, [setCurrentStep]);
 
   const onSubmit = (data: Step3FormData) => {
-    updateStep3(data);
+    updateStep3(data as Step3Data);
     completeWizard();
-    // Navigate to Auth stack (Auth Last pattern)
+    // Navigate to Result screen (Auth First pattern)
     rootNavigation.reset({
       index: 0,
-      routes: [{name: 'Auth'}],
+      routes: [{name: 'Result'}],
     });
   };
 
@@ -85,16 +86,24 @@ export const Step3Preferences: React.FC = () => {
     <SafeAreaWrapper>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled">
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}>
         <FluidProgressBar currentStep={3} totalSteps={3} />
 
         <View style={styles.content}>
-          <Text style={styles.title}>Almost There!</Text>
-          <Text style={styles.subtitle}>
-            Tell us your preferences and you'll unlock your personalized offer.
-          </Text>
+          {/* Header */}
+          <View style={styles.header}>
+            <View style={styles.iconContainer}>
+              <Text style={styles.icon}>🎯</Text>
+            </View>
+            <Text style={styles.title}>Almost There!</Text>
+            <Text style={styles.subtitle}>
+              Tell us your preferences and unlock your personalized offer.
+            </Text>
+          </View>
 
-          <View style={styles.form}>
+          {/* Form Card */}
+          <View style={styles.formCard}>
             <Controller
               control={control}
               name="offerType"
@@ -144,6 +153,17 @@ export const Step3Preferences: React.FC = () => {
               )}
             />
           </View>
+
+          {/* Success Preview */}
+          <View style={styles.previewCard}>
+            <Text style={styles.previewIcon}>🎁</Text>
+            <View style={styles.previewContent}>
+              <Text style={styles.previewTitle}>Your offer is ready!</Text>
+              <Text style={styles.previewText}>
+                Complete this step to unlock exclusive deals tailored just for you.
+              </Text>
+            </View>
+          </View>
         </View>
 
         <View style={styles.footer}>
@@ -172,31 +192,81 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 24,
-    paddingTop: 24,
+    paddingTop: 16,
+  },
+  header: {
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  iconContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: 20,
+    backgroundColor: colors.gradient.end,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+    ...shadows.md,
+  },
+  icon: {
+    fontSize: 28,
   },
   title: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#1F2937',
+    color: colors.text.primary,
     marginBottom: 8,
+    textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
-    color: '#6B7280',
+    color: colors.text.secondary,
     lineHeight: 24,
-    marginBottom: 32,
+    textAlign: 'center',
+    paddingHorizontal: 16,
   },
-  form: {
-    flex: 1,
+  formCard: {
+    backgroundColor: colors.background.card,
+    borderRadius: borderRadius.lg,
+    padding: 20,
+    ...shadows.md,
   },
   termsText: {
     fontSize: 14,
-    color: '#374151',
+    color: colors.text.primary,
     lineHeight: 20,
   },
   termsLink: {
-    color: '#4F46E5',
-    fontWeight: '500',
+    color: colors.accent.primary,
+    fontWeight: '600',
+  },
+  previewCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ECFDF5',
+    borderRadius: borderRadius.md,
+    padding: 16,
+    marginTop: 16,
+    borderWidth: 1,
+    borderColor: '#A7F3D0',
+  },
+  previewIcon: {
+    fontSize: 32,
+    marginRight: 14,
+  },
+  previewContent: {
+    flex: 1,
+  },
+  previewTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#065F46',
+    marginBottom: 2,
+  },
+  previewText: {
+    fontSize: 13,
+    color: '#047857',
+    lineHeight: 18,
   },
   footer: {
     flexDirection: 'row',

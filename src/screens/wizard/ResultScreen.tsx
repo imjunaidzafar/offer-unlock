@@ -1,5 +1,7 @@
 import React, {useEffect} from 'react';
 import {View, Text, StyleSheet, ScrollView} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -12,12 +14,17 @@ import Animated, {
 import {SafeAreaWrapper, Button} from '../../components/ui';
 import {useWizardStore} from '../../store/useWizardStore';
 import {useAuthStore} from '../../store/useAuthStore';
+import {colors, shadows, borderRadius} from '../../theme';
+import type {RootStackParamList} from '../../types';
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export const ResultScreen: React.FC = () => {
-  const wizardData = useWizardStore((state) => state.data);
-  const user = useAuthStore((state) => state.user);
-  const resetWizard = useWizardStore((state) => state.resetWizard);
-  const logout = useAuthStore((state) => state.logout);
+  const navigation = useNavigation<NavigationProp>();
+  const wizardData = useWizardStore(state => state.data);
+  const user = useAuthStore(state => state.user);
+  const resetWizard = useWizardStore(state => state.resetWizard);
+  const logout = useAuthStore(state => state.logout);
 
   // Animation values
   const checkmarkScale = useSharedValue(0);
@@ -58,8 +65,9 @@ export const ResultScreen: React.FC = () => {
         return {
           title: 'Personal Loan',
           amount: '$15,000',
-          rate: '6.99% APR',
+          rate: '5.9% APR',
           term: '36 months',
+          icon: '💰',
         };
       case 'credit-card':
         return {
@@ -67,13 +75,15 @@ export const ResultScreen: React.FC = () => {
           amount: '$10,000 limit',
           rate: '0% intro APR',
           term: '18 months',
+          icon: '💳',
         };
       case 'insurance':
         return {
           title: 'Life Insurance',
           amount: '$500,000 coverage',
-          rate: '$45/month',
+          rate: '$29/month',
           term: '20 year term',
+          icon: '🛡️',
         };
       default:
         return {
@@ -81,33 +91,53 @@ export const ResultScreen: React.FC = () => {
           amount: '$10,000',
           rate: 'Competitive rates',
           term: 'Flexible terms',
+          icon: '🎁',
         };
     }
   };
 
   const offer = getOfferDetails();
 
+  const handleGoToDashboard = () => {
+    navigation.reset({
+      index: 0,
+      routes: [{name: 'Home'}],
+    });
+  };
+
   const handleStartOver = () => {
     resetWizard();
     logout();
+    navigation.reset({
+      index: 0,
+      routes: [{name: 'Auth'}],
+    });
   };
 
   return (
-    <SafeAreaWrapper backgroundColor="#4F46E5">
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+    <SafeAreaWrapper backgroundColor={colors.accent.primary}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Animated.View style={[styles.checkmarkContainer, checkmarkStyle]}>
             <Text style={styles.checkmark}>✓</Text>
           </Animated.View>
           <Text style={styles.congratsTitle}>Congratulations!</Text>
           <Text style={styles.congratsSubtitle}>
-            {wizardData.step1.firstName || user?.username || 'You'}'ve unlocked an exclusive offer
+            {wizardData.step1.firstName || user?.username || 'You'}'ve unlocked
+            an exclusive offer
           </Text>
         </View>
 
         <Animated.View style={[styles.offerCard, cardStyle]}>
-          <View style={styles.offerBadge}>
-            <Text style={styles.offerBadgeText}>EXCLUSIVE</Text>
+          <View style={styles.offerHeader}>
+            <View style={styles.offerIconContainer}>
+              <Text style={styles.offerIcon}>{offer.icon}</Text>
+            </View>
+            <View style={styles.offerBadge}>
+              <Text style={styles.offerBadgeText}>EXCLUSIVE</Text>
+            </View>
           </View>
 
           <Text style={styles.offerTitle}>{offer.title}</Text>
@@ -132,14 +162,14 @@ export const ResultScreen: React.FC = () => {
           <View style={styles.offerActions}>
             <Button
               title="Accept Offer"
-              onPress={() => {}}
+              onPress={handleGoToDashboard}
               style={styles.acceptButton}
             />
             <Button
-              title="View Details"
-              onPress={() => {}}
+              title="Go to Dashboard"
+              onPress={handleGoToDashboard}
               variant="outline"
-              style={styles.detailsButton}
+              style={styles.dashboardButton}
             />
           </View>
         </Animated.View>
@@ -172,23 +202,24 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
   },
   checkmarkContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#FFFFFF',
+    width: 88,
+    height: 88,
+    borderRadius: 28,
+    backgroundColor: colors.background.card,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 24,
+    ...shadows.lg,
   },
   checkmark: {
-    fontSize: 40,
-    color: '#4F46E5',
+    fontSize: 44,
+    color: colors.accent.primary,
     fontWeight: '700',
   },
   congratsTitle: {
     fontSize: 32,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: colors.text.inverse,
     marginBottom: 8,
     textAlign: 'center',
   },
@@ -196,35 +227,56 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'rgba(255, 255, 255, 0.9)',
     textAlign: 'center',
+    lineHeight: 24,
   },
   offerCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
+    backgroundColor: colors.background.card,
+    borderRadius: borderRadius.xl,
     padding: 24,
     marginBottom: 24,
+    ...shadows.lg,
   },
-  offerBadge: {
-    alignSelf: 'flex-start',
-    backgroundColor: '#FEF3C7',
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
+  offerHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 16,
   },
+  offerIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: borderRadius.md,
+    backgroundColor: '#EDE9FE',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  offerIcon: {
+    fontSize: 24,
+  },
+  offerBadge: {
+    backgroundColor: '#FEF3C7',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: borderRadius.full,
+  },
   offerBadgeText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '700',
     color: '#D97706',
+    letterSpacing: 0.5,
   },
   offerTitle: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: '700',
-    color: '#1F2937',
+    color: colors.text.primary,
     marginBottom: 20,
   },
   offerDetails: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    backgroundColor: colors.background.secondary,
+    borderRadius: borderRadius.md,
+    padding: 16,
     marginBottom: 24,
   },
   offerDetailItem: {
@@ -233,26 +285,26 @@ const styles = StyleSheet.create({
   },
   offerDetailLabel: {
     fontSize: 12,
-    color: '#6B7280',
+    color: colors.text.secondary,
     marginBottom: 4,
   },
   offerDetailValue: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1F2937',
+    fontSize: 15,
+    fontWeight: '700',
+    color: colors.text.primary,
   },
   offerDetailDivider: {
     width: 1,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: colors.border.default,
   },
   offerActions: {
     gap: 12,
   },
   acceptButton: {
-    backgroundColor: '#10B981',
+    backgroundColor: colors.success,
   },
-  detailsButton: {
-    borderColor: '#D1D5DB',
+  dashboardButton: {
+    borderColor: colors.border.default,
   },
   footer: {
     flex: 1,
@@ -264,12 +316,13 @@ const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.7)',
     textAlign: 'center',
     marginBottom: 16,
+    lineHeight: 20,
   },
   startOverButton: {
-    borderColor: 'rgba(255, 255, 255, 0.5)',
+    borderColor: 'rgba(255, 255, 255, 0.4)',
     backgroundColor: 'transparent',
   },
   startOverText: {
-    color: '#FFFFFF',
+    color: colors.text.inverse,
   },
 });
