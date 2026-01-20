@@ -4,7 +4,7 @@ import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {SafeAreaWrapper, Button} from '../components/ui';
 import {useAuthStore} from '../store/useAuthStore';
-import {useWizardStore} from '../store/useWizardStore';
+import {useWizardStore, useWizardData} from '../store/useWizardStore';
 import {colors, shadows, borderRadius} from '../theme';
 import type {RootStackParamList} from '../types';
 
@@ -14,12 +14,12 @@ export const HomeScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const user = useAuthStore(state => state.user);
   const logout = useAuthStore(state => state.logout);
-  const resetWizard = useWizardStore(state => state.resetWizard);
   const wizardData = useWizardStore(state => state.data);
 
   const handleLogout = () => {
+    // Only logout, don't reset wizard data
+    // User can log back in and go directly to Home
     logout();
-    resetWizard();
     navigation.reset({
       index: 0,
       routes: [{name: 'Auth'}],
