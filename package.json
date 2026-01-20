@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
-    "@react-native-community/datetimepicker": "7.6.2",
+    "@react-native-community/datetimepicker": "8.0.1",
     "@react-navigation/native": "6.1.18",
     "@react-navigation/native-stack": "6.10.1",
     "react": "18.2.0",

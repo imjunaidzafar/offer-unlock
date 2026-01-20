@@ -2460,12 +2460,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-community/datetimepicker@npm:7.6.2":
-  version: 7.6.2
-  resolution: "@react-native-community/datetimepicker@npm:7.6.2"
+"@react-native-community/datetimepicker@npm:8.0.1":
+  version: 8.0.1
+  resolution: "@react-native-community/datetimepicker@npm:8.0.1"
   dependencies:
     invariant: ^2.2.4
-  checksum: 24c718c01e7ff6bc4b47867bfdf77b98fb8e3a872a627ce057062c37bf24a27264ac40c46cc66c27b134fc56392dc90d5b81dfb3ad5073af2477da055c13cb17
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+    react-native-windows: "*"
+  peerDependenciesMeta:
+    react-native-windows:
+      optional: true
+  checksum: 553a40ebb3adadbe6f6d4d9e6ab9d72761014ee47614bff0888e4e38bd430f22947e34cdc11e8a97ebf97811986939ca25e79c98bf7a9baef51476481385adab
   languageName: node
   linkType: hard
 
@@ -3282,7 +3289,7 @@ __metadata:
     "@babel/preset-env": ^7.20.0
     "@babel/runtime": ^7.20.0
     "@hookform/resolvers": ^5.2.2
-    "@react-native-community/datetimepicker": 7.6.2
+    "@react-native-community/datetimepicker": 8.0.1
     "@react-native/babel-preset": 0.74.81
     "@react-native/eslint-config": 0.74.81
     "@react-native/metro-config": 0.74.81
