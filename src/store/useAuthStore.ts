@@ -152,6 +152,21 @@ export const useAuthStore = create<AuthState>()(
         });
       },
 
+      deleteAccount: () => {
+        const currentUser = get().user;
+        if (currentUser) {
+          // Remove user from mock database
+          mockUsers.delete(currentUser.username.toLowerCase());
+          saveMockUsers(mockUsers);
+        }
+        // Clear auth state
+        set({
+          user: null,
+          isAuthenticated: false,
+          error: null,
+        });
+      },
+
       clearError: () => {
         set({error: null});
       },

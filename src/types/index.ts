@@ -74,6 +74,7 @@ export interface AuthState {
   signUp: (data: SignUpData) => Promise<void>;
   login: (data: LoginData) => Promise<void>;
   logout: () => void;
+  deleteAccount: () => void;
   clearError: () => void;
 }
 
