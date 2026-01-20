@@ -20,8 +20,32 @@ export const isAuthHydrated = () => authHydrated;
 // Mock API delay
 const mockDelay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-// Mock user database (in-memory for demo)
-const mockUsers: Map<string, {user: User; password: string}> = new Map();
+// Mock user database with persistence
+import {storage} from './storage';
+
+const USERS_STORAGE_KEY = 'mock-users-db';
+
+// Load users from storage
+const loadMockUsers = (): Map<string, {user: User; password: string}> => {
+  try {
+    const stored = storage.getString(USERS_STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return new Map(Object.entries(parsed));
+    }
+  } catch (e) {
+    // Ignore errors, start with empty map
+  }
+  return new Map();
+};
+
+// Save users to storage
+const saveMockUsers = (users: Map<string, {user: User; password: string}>) => {
+  const obj = Object.fromEntries(users);
+  storage.set(USERS_STORAGE_KEY, JSON.stringify(obj));
+};
+
+const mockUsers = loadMockUsers();
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -64,6 +88,7 @@ export const useAuthStore = create<AuthState>()(
             user: newUser,
             password: data.password,
           });
+          saveMockUsers(mockUsers);
 
           set({
             user: newUser,
