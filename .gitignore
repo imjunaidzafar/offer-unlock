@@ -66,12 +66,7 @@ yarn-error.log
 /coverage
 
 # Yarn
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
+.yarn/
 
 # Ruby bundler
 .bundle/
