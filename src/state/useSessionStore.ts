@@ -3,29 +3,25 @@ import {persist, createJSONStorage} from 'zustand/middleware';
 import {zustandStorage} from './storage';
 import type {AuthState, SignUpData, LoginData, User} from '../types';
 
-// Hydration state
-let authHydrated = false;
-const authHydrationListeners: Array<() => void> = [];
+let sessionHydrated = false;
+const sessionHydrationListeners: Array<() => void> = [];
 
-export const onAuthHydration = (callback: () => void) => {
-  if (authHydrated) {
+export const onSessionHydration = (callback: () => void) => {
+  if (sessionHydrated) {
     callback();
   } else {
-    authHydrationListeners.push(callback);
+    sessionHydrationListeners.push(callback);
   }
 };
 
-export const isAuthHydrated = () => authHydrated;
+export const isSessionHydrated = () => sessionHydrated;
 
-// Mock API delay
 const mockDelay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-// Mock user database with persistence
 import {storage} from './storage';
 
 const USERS_STORAGE_KEY = 'mock-users-db';
 
-// Load users from storage
 const loadMockUsers = (): Map<string, {user: User; password: string}> => {
   try {
     const stored = storage.getString(USERS_STORAGE_KEY);
@@ -34,12 +30,11 @@ const loadMockUsers = (): Map<string, {user: User; password: string}> => {
       return new Map(Object.entries(parsed));
     }
   } catch (e) {
-    // Ignore errors, start with empty map
+    // Ignore errors
   }
   return new Map();
 };
 
-// Save users to storage
 const saveMockUsers = (users: Map<string, {user: User; password: string}>) => {
   const obj = Object.fromEntries(users);
   storage.set(USERS_STORAGE_KEY, JSON.stringify(obj));
@@ -47,7 +42,7 @@ const saveMockUsers = (users: Map<string, {user: User; password: string}>) => {
 
 const mockUsers = loadMockUsers();
 
-export const useAuthStore = create<AuthState>()(
+export const useSessionStore = create<AuthState>()(
   persist(
     (set, get) => ({
       user: null,
@@ -145,11 +140,9 @@ export const useAuthStore = create<AuthState>()(
       deleteAccount: () => {
         const currentUser = get().user;
         if (currentUser) {
-          // Remove user from mock database
           mockUsers.delete(currentUser.username.toLowerCase());
           saveMockUsers(mockUsers);
         }
-        // Clear auth state
         set({
           user: null,
           isAuthenticated: false,
@@ -162,23 +155,22 @@ export const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      name: 'auth-storage',
+      name: 'session-storage',
       storage: createJSONStorage(() => zustandStorage),
       partialize: (state) => ({
         user: state.user,
         isAuthenticated: state.isAuthenticated,
       }),
       onRehydrateStorage: () => (state) => {
-        authHydrated = true;
-        authHydrationListeners.forEach(listener => listener());
-        authHydrationListeners.length = 0;
+        sessionHydrated = true;
+        sessionHydrationListeners.forEach(listener => listener());
+        sessionHydrationListeners.length = 0;
       },
     },
   ),
 );
 
-// Selector hooks
-export const useUser = () => useAuthStore((state) => state.user);
-export const useIsAuthenticated = () => useAuthStore((state) => state.isAuthenticated);
-export const useAuthLoading = () => useAuthStore((state) => state.isLoading);
-export const useAuthError = () => useAuthStore((state) => state.error);
+export const useUser = () => useSessionStore((state) => state.user);
+export const useIsAuthenticated = () => useSessionStore((state) => state.isAuthenticated);
+export const useSessionLoading = () => useSessionStore((state) => state.isLoading);
+export const useSessionError = () => useSessionStore((state) => state.error);

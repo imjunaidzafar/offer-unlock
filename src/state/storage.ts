@@ -3,7 +3,7 @@ import {StateStorage} from 'zustand/middleware';
 
 // Create MMKV instance
 export const storage = new MMKV({
-  id: 'offer-unlock-storage',
+  id: 'offerly-storage',
 });
 
 // Zustand persist storage adapter
