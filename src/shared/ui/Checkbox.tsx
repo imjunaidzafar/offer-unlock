@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   ViewStyle,
 } from 'react-native';
-import {colors, shadows, borderRadius} from '../../theme';
+import {colors, shadows, borderRadius} from '../../design';
 
 interface CheckboxProps {
   label: string | React.ReactNode;
@@ -81,6 +81,9 @@ const styles = StyleSheet.create({
     color: colors.text.inverse,
     fontSize: 16,
     fontWeight: '700',
+    includeFontPadding: false,
+    textAlign: 'center',
+    textAlignVertical: 'center',
   },
   label: {
     flex: 1,

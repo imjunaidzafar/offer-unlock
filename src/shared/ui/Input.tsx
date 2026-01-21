@@ -8,10 +8,10 @@ import {
   TouchableOpacity,
   ViewStyle,
 } from 'react-native';
-import {colors, shadows, borderRadius} from '../../theme';
+import {colors, shadows, borderRadius} from '../../design';
 
 interface InputProps extends Omit<TextInputProps, 'style'> {
-  label: string;
+  label?: string;
   error?: string;
   containerStyle?: ViewStyle;
   secureTextEntry?: boolean;
@@ -45,7 +45,7 @@ export const Input: React.FC<InputProps> = ({
 
   return (
     <View style={[styles.container, containerStyle]}>
-      <Text style={[styles.label, error ? styles.labelError : undefined]}>{label}</Text>
+      {label && <Text style={[styles.label, error ? styles.labelError : undefined]}>{label}</Text>}
       <View style={[styles.inputContainer, {borderColor: getBorderColor()}]}>
         <TextInput
           {...textInputProps}

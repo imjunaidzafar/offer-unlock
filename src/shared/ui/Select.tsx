@@ -8,7 +8,7 @@ import {
   FlatList,
   ViewStyle,
 } from 'react-native';
-import {colors, shadows, borderRadius} from '../../theme';
+import {colors, shadows, borderRadius} from '../../design';
 
 interface SelectOption {
   label: string;
@@ -197,5 +197,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.accent.primary,
     fontWeight: '700',
+    includeFontPadding: false,
+    textAlign: 'center',
+    textAlignVertical: 'center',
   },
 });
