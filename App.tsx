@@ -5,7 +5,7 @@ import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {StyleSheet} from 'react-native';
 import BootSplash from 'react-native-bootsplash';
 import {RootNavigator} from './src/navigation/RootNavigator';
-import {SplashScreen} from './src/components/SplashScreen';
+import {SplashScreen} from './src/shared/SplashScreen';
 
 function App(): React.JSX.Element {
   const [showSplash, setShowSplash] = useState(true);
