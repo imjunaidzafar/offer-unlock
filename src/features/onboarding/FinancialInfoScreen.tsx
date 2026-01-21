@@ -10,11 +10,11 @@ import {
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useForm, Controller} from 'react-hook-form';
-import {SafeAreaWrapper, Input, Button, Select} from '../../components/ui';
-import {FluidProgressBar} from '../../components/wizard/FluidProgressBar';
-import {useWizardStore, useStep2Data} from '../../store/useWizardStore';
-import {step2Schema, Step2FormData, safeZodResolver} from '../../utils/validation';
-import {colors, shadows, borderRadius} from '../../theme';
+import {SafeAreaWrapper, Input, Button, Select} from '../../shared/ui';
+import {AnimatedStepIndicator} from '../../shared/onboarding/AnimatedStepIndicator';
+import {useOnboardingStore, useStep2Data} from '../../state/useOnboardingStore';
+import {step2Schema, Step2FormData, safeZodResolver} from '../../lib/schemas';
+import {colors, shadows, borderRadius} from '../../design';
 import type {WizardStackParamList, Step2Data} from '../../types';
 
 type NavigationProp = NativeStackNavigationProp<WizardStackParamList, 'Step2'>;
@@ -33,11 +33,11 @@ const creditScoreOptions = [
   {label: 'Poor (Below 650)', value: 'poor'},
 ];
 
-export const Step2IncomeDetails: React.FC = () => {
+export const FinancialInfoScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const step2Data = useStep2Data();
-  const updateStep2 = useWizardStore(state => state.updateStep2);
-  const setCurrentStep = useWizardStore(state => state.setCurrentStep);
+  const updateStep2 = useOnboardingStore(state => state.updateStep2);
+  const setCurrentStep = useOnboardingStore(state => state.setCurrentStep);
 
   const {
     control,
@@ -101,7 +101,7 @@ export const Step2IncomeDetails: React.FC = () => {
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}>
-          <FluidProgressBar currentStep={2} totalSteps={3} />
+          <AnimatedStepIndicator currentStep={2} totalSteps={3} />
 
           <View style={styles.content}>
             {/* Header */}

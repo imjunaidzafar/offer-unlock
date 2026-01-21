@@ -11,27 +11,27 @@ import Animated, {
   withTiming,
   Easing,
 } from 'react-native-reanimated';
-import {SafeAreaWrapper, Button} from '../../components/ui';
-import {useWizardStore} from '../../store/useWizardStore';
-import {useAuthStore} from '../../store/useAuthStore';
+import {SafeAreaWrapper, Button} from '../../shared/ui';
+import {useOnboardingStore} from '../../state/useOnboardingStore';
+import {useSessionStore} from '../../state/useSessionStore';
 import {
   calculateOffer,
   getOfferSummary,
   formatCurrency,
   formatCurrencyDecimal,
   type CalculatedOffer,
-} from '../../utils/offerCalculator';
-import {colors, shadows, borderRadius} from '../../theme';
+} from '../../lib/quoteEngine';
+import {colors, shadows, borderRadius} from '../../design';
 import type {RootStackParamList} from '../../types';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-export const ResultScreen: React.FC = () => {
+export const OfferRevealScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
-  const wizardData = useWizardStore(state => state.data);
-  const user = useAuthStore(state => state.user);
-  const resetWizard = useWizardStore(state => state.resetWizard);
-  const logout = useAuthStore(state => state.logout);
+  const wizardData = useOnboardingStore(state => state.data);
+  const user = useSessionStore(state => state.user);
+  const resetWizard = useOnboardingStore(state => state.resetWizard);
+  const logout = useSessionStore(state => state.logout);
 
   const checkmarkScale = useSharedValue(0);
   const cardOpacity = useSharedValue(0);

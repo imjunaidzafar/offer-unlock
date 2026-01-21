@@ -12,25 +12,25 @@ import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useForm, Controller} from 'react-hook-form';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import {SafeAreaWrapper, Input, Button} from '../../components/ui';
-import {FluidProgressBar} from '../../components/wizard/FluidProgressBar';
-import {useWizardStore, useStep1Data} from '../../store/useWizardStore';
-import {useAuthStore} from '../../store/useAuthStore';
-import {step1Schema, Step1FormData, safeZodResolver} from '../../utils/validation';
-import {colors, shadows, borderRadius} from '../../theme';
+import {SafeAreaWrapper, Input, Button} from '../../shared/ui';
+import {AnimatedStepIndicator} from '../../shared/onboarding/AnimatedStepIndicator';
+import {useOnboardingStore, useStep1Data} from '../../state/useOnboardingStore';
+import {useSessionStore} from '../../state/useSessionStore';
+import {step1Schema, Step1FormData, safeZodResolver} from '../../lib/schemas';
+import {colors, shadows, borderRadius} from '../../design';
 import type {WizardStackParamList, RootStackParamList} from '../../types';
 
 type WizardNavigationProp = NativeStackNavigationProp<WizardStackParamList, 'Step1'>;
 type RootNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-export const Step1PersonalInfo: React.FC = () => {
+export const PersonalDetailsScreen: React.FC = () => {
   const wizardNavigation = useNavigation<WizardNavigationProp>();
   const rootNavigation = useNavigation<RootNavigationProp>();
   const step1Data = useStep1Data();
-  const updateStep1 = useWizardStore(state => state.updateStep1);
-  const setCurrentStep = useWizardStore(state => state.setCurrentStep);
-  const resetWizard = useWizardStore(state => state.resetWizard);
-  const logout = useAuthStore(state => state.logout);
+  const updateStep1 = useOnboardingStore(state => state.updateStep1);
+  const setCurrentStep = useOnboardingStore(state => state.setCurrentStep);
+  const resetWizard = useOnboardingStore(state => state.resetWizard);
+  const logout = useSessionStore(state => state.logout);
 
   const [showDatePicker, setShowDatePicker] = useState(false);
 
@@ -121,7 +121,7 @@ export const Step1PersonalInfo: React.FC = () => {
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}>
-          <FluidProgressBar currentStep={1} totalSteps={3} />
+          <AnimatedStepIndicator currentStep={1} totalSteps={3} />
 
           <View style={styles.content}>
             {/* Header */}

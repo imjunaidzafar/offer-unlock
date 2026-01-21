@@ -3,11 +3,11 @@ import {View, Text, StyleSheet, ScrollView} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useForm, Controller} from 'react-hook-form';
-import {SafeAreaWrapper, Button, Select, Checkbox} from '../../components/ui';
-import {FluidProgressBar} from '../../components/wizard/FluidProgressBar';
-import {useWizardStore, useStep3Data} from '../../store/useWizardStore';
-import {step3Schema, Step3FormData, safeZodResolver} from '../../utils/validation';
-import {colors, shadows, borderRadius} from '../../theme';
+import {SafeAreaWrapper, Button, Select, Checkbox} from '../../shared/ui';
+import {AnimatedStepIndicator} from '../../shared/onboarding/AnimatedStepIndicator';
+import {useOnboardingStore, useStep3Data} from '../../state/useOnboardingStore';
+import {step3Schema, Step3FormData, safeZodResolver} from '../../lib/schemas';
+import {colors, shadows, borderRadius} from '../../design';
 import type {WizardStackParamList, RootStackParamList, Step3Data} from '../../types';
 
 type WizardNavigationProp = NativeStackNavigationProp<WizardStackParamList, 'Step3'>;
@@ -25,13 +25,13 @@ const contactPreferenceOptions = [
   {label: 'Both', value: 'both'},
 ];
 
-export const Step3Preferences: React.FC = () => {
+export const PreferencesScreen: React.FC = () => {
   const wizardNavigation = useNavigation<WizardNavigationProp>();
   const rootNavigation = useNavigation<RootNavigationProp>();
   const step3Data = useStep3Data();
-  const updateStep3 = useWizardStore(state => state.updateStep3);
-  const setCurrentStep = useWizardStore(state => state.setCurrentStep);
-  const completeWizard = useWizardStore(state => state.completeWizard);
+  const updateStep3 = useOnboardingStore(state => state.updateStep3);
+  const setCurrentStep = useOnboardingStore(state => state.setCurrentStep);
+  const completeWizard = useOnboardingStore(state => state.completeWizard);
 
   const {
     control,
@@ -88,7 +88,7 @@ export const Step3Preferences: React.FC = () => {
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}>
-        <FluidProgressBar currentStep={3} totalSteps={3} />
+        <AnimatedStepIndicator currentStep={3} totalSteps={3} />
 
         <View style={styles.content}>
           {/* Header */}
