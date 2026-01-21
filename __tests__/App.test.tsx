@@ -11,8 +11,9 @@ describe('App', () => {
     const {getByText} = render(<App />);
 
     // Wait for the app to render the login screen (Auth First pattern)
+    // Splash screen takes ~3 seconds to complete
     await waitFor(() => {
-      expect(getByText('Welcome Back')).toBeTruthy();
-    }, {timeout: 5000});
-  });
+      expect(getByText('Hey there!')).toBeTruthy();
+    }, {timeout: 6000});
+  }, 10000);
 });

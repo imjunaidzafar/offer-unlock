@@ -3,7 +3,7 @@ import {render, fireEvent, waitFor, screen} from '@testing-library/react-native'
 import {NavigationContainer} from '@react-navigation/native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {WizardStack} from '../../src/navigation/WizardStack';
-import {useWizardStore} from '../../src/store/useWizardStore';
+import {useOnboardingStore} from '../../src/state/useOnboardingStore';
 
 // Use initialWindowMetrics to provide safe area values
 const initialMetrics = {
@@ -20,7 +20,7 @@ const TestWrapper: React.FC<{children: React.ReactNode}> = ({children}) => (
 describe('Wizard Flow Integration', () => {
   beforeEach(() => {
     // Reset wizard store before each test
-    useWizardStore.setState({
+    useOnboardingStore.setState({
       currentStep: 1,
       data: {
         step1: {firstName: '', lastName: '', dateOfBirth: ''},
@@ -75,7 +75,7 @@ describe('Wizard Flow Integration', () => {
       fireEvent.changeText(firstNameInput, 'John');
 
       await waitFor(() => {
-        const state = useWizardStore.getState();
+        const state = useOnboardingStore.getState();
         expect(state.data.step1.firstName).toBe('John');
       });
     });
@@ -95,7 +95,7 @@ describe('Wizard Flow Integration', () => {
       fireEvent.changeText(lastNameInput, 'Doe');
 
       await waitFor(() => {
-        const state = useWizardStore.getState();
+        const state = useOnboardingStore.getState();
         expect(state.data.step1.lastName).toBe('Doe');
       });
     });
@@ -110,7 +110,7 @@ describe('Wizard Flow Integration', () => {
       );
 
       await waitFor(() => {
-        const state = useWizardStore.getState();
+        const state = useOnboardingStore.getState();
         expect(state.currentStep).toBe(1);
       });
     });
@@ -139,7 +139,7 @@ describe('Wizard Flow Integration', () => {
       await waitFor(() => {
         expect(screen.getByText('Personal')).toBeTruthy();
       });
-      expect(screen.getByText('Income')).toBeTruthy();
+      expect(screen.getByText('Financial')).toBeTruthy();
       expect(screen.getByText('Preferences')).toBeTruthy();
     });
   });
@@ -160,11 +160,11 @@ describe('Wizard Flow Integration', () => {
       fireEvent.changeText(firstNameInput, 'John');
 
       await waitFor(() => {
-        expect(useWizardStore.getState().data.step1.firstName).toBe('John');
+        expect(useOnboardingStore.getState().data.step1.firstName).toBe('John');
       });
 
       // Store maintains state
-      const state = useWizardStore.getState();
+      const state = useOnboardingStore.getState();
       expect(state.data.step1.firstName).toBe('John');
     });
   });
@@ -189,7 +189,7 @@ describe('Wizard Flow Integration', () => {
 
 describe('Auth Flow Integration', () => {
   beforeEach(() => {
-    useWizardStore.setState({
+    useOnboardingStore.setState({
       currentStep: 1,
       data: {
         step1: {firstName: '', lastName: '', dateOfBirth: ''},
@@ -201,13 +201,13 @@ describe('Auth Flow Integration', () => {
   });
 
   it('should show wizard first in the flow (Auth Last pattern)', () => {
-    const isCompleted = useWizardStore.getState().isCompleted;
+    const isCompleted = useOnboardingStore.getState().isCompleted;
     expect(isCompleted).toBe(false);
   });
 
   it('should mark wizard as completed when completeWizard is called', () => {
-    const {completeWizard} = useWizardStore.getState();
+    const {completeWizard} = useOnboardingStore.getState();
     completeWizard();
-    expect(useWizardStore.getState().isCompleted).toBe(true);
+    expect(useOnboardingStore.getState().isCompleted).toBe(true);
   });
 });

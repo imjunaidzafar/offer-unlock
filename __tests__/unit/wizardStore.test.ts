@@ -9,12 +9,12 @@ jest.mock('react-native-mmkv', () => ({
   })),
 }));
 
-import {useWizardStore} from '../../src/store/useWizardStore';
+import {useOnboardingStore} from '../../src/state/useOnboardingStore';
 
 describe('Wizard Store', () => {
   beforeEach(() => {
     // Clear the store state before each test
-    useWizardStore.setState({
+    useOnboardingStore.setState({
       currentStep: 1,
       data: {
         step1: {firstName: '', lastName: '', dateOfBirth: ''},
@@ -28,7 +28,7 @@ describe('Wizard Store', () => {
 
   describe('Initial State', () => {
     it('should have correct initial state', () => {
-      const state = useWizardStore.getState();
+      const state = useOnboardingStore.getState();
       expect(state.currentStep).toBe(1);
       expect(state.isCompleted).toBe(false);
       expect(state.data.step1.firstName).toBe('');
@@ -37,54 +37,54 @@ describe('Wizard Store', () => {
 
   describe('Step Navigation', () => {
     it('should update current step', () => {
-      const {setCurrentStep} = useWizardStore.getState();
+      const {setCurrentStep} = useOnboardingStore.getState();
       setCurrentStep(2);
-      expect(useWizardStore.getState().currentStep).toBe(2);
+      expect(useOnboardingStore.getState().currentStep).toBe(2);
     });
 
     it('should track step progression', () => {
-      const {setCurrentStep} = useWizardStore.getState();
+      const {setCurrentStep} = useOnboardingStore.getState();
       setCurrentStep(1);
-      expect(useWizardStore.getState().currentStep).toBe(1);
+      expect(useOnboardingStore.getState().currentStep).toBe(1);
       setCurrentStep(2);
-      expect(useWizardStore.getState().currentStep).toBe(2);
+      expect(useOnboardingStore.getState().currentStep).toBe(2);
       setCurrentStep(3);
-      expect(useWizardStore.getState().currentStep).toBe(3);
+      expect(useOnboardingStore.getState().currentStep).toBe(3);
     });
   });
 
   describe('Step 1 Data Updates', () => {
     it('should update first name', () => {
-      const {updateStep1} = useWizardStore.getState();
+      const {updateStep1} = useOnboardingStore.getState();
       updateStep1({firstName: 'John'});
-      expect(useWizardStore.getState().data.step1.firstName).toBe('John');
+      expect(useOnboardingStore.getState().data.step1.firstName).toBe('John');
     });
 
     it('should update last name', () => {
-      const {updateStep1} = useWizardStore.getState();
+      const {updateStep1} = useOnboardingStore.getState();
       updateStep1({lastName: 'Doe'});
-      expect(useWizardStore.getState().data.step1.lastName).toBe('Doe');
+      expect(useOnboardingStore.getState().data.step1.lastName).toBe('Doe');
     });
 
     it('should update date of birth', () => {
-      const {updateStep1} = useWizardStore.getState();
+      const {updateStep1} = useOnboardingStore.getState();
       updateStep1({dateOfBirth: '1990-01-15'});
-      expect(useWizardStore.getState().data.step1.dateOfBirth).toBe('1990-01-15');
+      expect(useOnboardingStore.getState().data.step1.dateOfBirth).toBe('1990-01-15');
     });
 
     it('should update multiple fields at once', () => {
-      const {updateStep1} = useWizardStore.getState();
+      const {updateStep1} = useOnboardingStore.getState();
       updateStep1({firstName: 'John', lastName: 'Doe'});
-      const {step1} = useWizardStore.getState().data;
+      const {step1} = useOnboardingStore.getState().data;
       expect(step1.firstName).toBe('John');
       expect(step1.lastName).toBe('Doe');
     });
 
     it('should preserve existing data when updating partial', () => {
-      const {updateStep1} = useWizardStore.getState();
+      const {updateStep1} = useOnboardingStore.getState();
       updateStep1({firstName: 'John'});
       updateStep1({lastName: 'Doe'});
-      const {step1} = useWizardStore.getState().data;
+      const {step1} = useOnboardingStore.getState().data;
       expect(step1.firstName).toBe('John');
       expect(step1.lastName).toBe('Doe');
     });
@@ -92,56 +92,56 @@ describe('Wizard Store', () => {
 
   describe('Step 2 Data Updates', () => {
     it('should update employment status', () => {
-      const {updateStep2} = useWizardStore.getState();
+      const {updateStep2} = useOnboardingStore.getState();
       updateStep2({employmentStatus: 'employed'});
-      expect(useWizardStore.getState().data.step2.employmentStatus).toBe('employed');
+      expect(useOnboardingStore.getState().data.step2.employmentStatus).toBe('employed');
     });
 
     it('should update annual income', () => {
-      const {updateStep2} = useWizardStore.getState();
+      const {updateStep2} = useOnboardingStore.getState();
       updateStep2({annualIncome: '75000'});
-      expect(useWizardStore.getState().data.step2.annualIncome).toBe('75000');
+      expect(useOnboardingStore.getState().data.step2.annualIncome).toBe('75000');
     });
 
     it('should update credit score range', () => {
-      const {updateStep2} = useWizardStore.getState();
+      const {updateStep2} = useOnboardingStore.getState();
       updateStep2({creditScoreRange: 'good'});
-      expect(useWizardStore.getState().data.step2.creditScoreRange).toBe('good');
+      expect(useOnboardingStore.getState().data.step2.creditScoreRange).toBe('good');
     });
   });
 
   describe('Step 3 Data Updates', () => {
     it('should update offer type', () => {
-      const {updateStep3} = useWizardStore.getState();
+      const {updateStep3} = useOnboardingStore.getState();
       updateStep3({offerType: 'loan'});
-      expect(useWizardStore.getState().data.step3.offerType).toBe('loan');
+      expect(useOnboardingStore.getState().data.step3.offerType).toBe('loan');
     });
 
     it('should update contact preference', () => {
-      const {updateStep3} = useWizardStore.getState();
+      const {updateStep3} = useOnboardingStore.getState();
       updateStep3({contactPreference: 'email'});
-      expect(useWizardStore.getState().data.step3.contactPreference).toBe('email');
+      expect(useOnboardingStore.getState().data.step3.contactPreference).toBe('email');
     });
 
     it('should update terms accepted', () => {
-      const {updateStep3} = useWizardStore.getState();
+      const {updateStep3} = useOnboardingStore.getState();
       updateStep3({termsAccepted: true});
-      expect(useWizardStore.getState().data.step3.termsAccepted).toBe(true);
+      expect(useOnboardingStore.getState().data.step3.termsAccepted).toBe(true);
     });
   });
 
   describe('Wizard Completion', () => {
     it('should mark wizard as completed', () => {
-      const {completeWizard} = useWizardStore.getState();
+      const {completeWizard} = useOnboardingStore.getState();
       completeWizard();
-      expect(useWizardStore.getState().isCompleted).toBe(true);
+      expect(useOnboardingStore.getState().isCompleted).toBe(true);
     });
   });
 
   describe('Wizard Reset', () => {
     it('should reset all data', () => {
       const {updateStep1, updateStep2, updateStep3, setCurrentStep, completeWizard, resetWizard} =
-        useWizardStore.getState();
+        useOnboardingStore.getState();
 
       // Set some data
       updateStep1({firstName: 'John', lastName: 'Doe'});
@@ -153,7 +153,7 @@ describe('Wizard Store', () => {
       // Reset
       resetWizard();
 
-      const state = useWizardStore.getState();
+      const state = useOnboardingStore.getState();
       expect(state.currentStep).toBe(1);
       expect(state.isCompleted).toBe(false);
       expect(state.data.step1.firstName).toBe('');
@@ -164,19 +164,19 @@ describe('Wizard Store', () => {
 
   describe('Data Persistence', () => {
     it('should persist data structure correctly', () => {
-      const {updateStep1, setCurrentStep} = useWizardStore.getState();
+      const {updateStep1, setCurrentStep} = useOnboardingStore.getState();
       updateStep1({firstName: 'John'});
       setCurrentStep(2);
 
       // The persist middleware should save to storage
       // We can't directly test MMKV in unit tests, but we verify the state
-      const state = useWizardStore.getState();
+      const state = useOnboardingStore.getState();
       expect(state.data.step1.firstName).toBe('John');
       expect(state.currentStep).toBe(2);
     });
 
     it('should maintain data across updates', () => {
-      const {updateStep1, updateStep2} = useWizardStore.getState();
+      const {updateStep1, updateStep2} = useOnboardingStore.getState();
 
       // Simulate user filling out form step by step
       updateStep1({firstName: 'John'});
@@ -186,7 +186,7 @@ describe('Wizard Store', () => {
       updateStep2({employmentStatus: 'employed'});
       updateStep2({annualIncome: '75000'});
 
-      const state = useWizardStore.getState();
+      const state = useOnboardingStore.getState();
       expect(state.data.step1.firstName).toBe('John');
       expect(state.data.step1.lastName).toBe('Doe');
       expect(state.data.step1.dateOfBirth).toBe('1990-01-15');

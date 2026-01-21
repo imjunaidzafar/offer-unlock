@@ -4,7 +4,7 @@ import {
   step3Schema,
   signUpSchema,
   loginSchema,
-} from '../../src/utils/validation';
+} from '../../src/lib/schemas';
 
 describe('Validation Schemas', () => {
   describe('Step 1 - Personal Info Schema', () => {
