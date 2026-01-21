@@ -32,6 +32,8 @@ export const OfferRevealScreen: React.FC = () => {
   const user = useSessionStore(state => state.user);
   const resetWizard = useOnboardingStore(state => state.resetWizard);
   const logout = useSessionStore(state => state.logout);
+  const isOfferAccepted = useOnboardingStore(state => state.isOfferAccepted);
+  const acceptOffer = useOnboardingStore(state => state.acceptOffer);
 
   const checkmarkScale = useSharedValue(0);
   const cardOpacity = useSharedValue(0);
@@ -93,6 +95,14 @@ export const OfferRevealScreen: React.FC = () => {
         };
     }
   }, [calculatedOffer]);
+
+  const handleAcceptOffer = () => {
+    acceptOffer();
+    navigation.reset({
+      index: 0,
+      routes: [{name: 'Home'}],
+    });
+  };
 
   const handleGoToDashboard = () => {
     navigation.reset({
@@ -161,11 +171,18 @@ export const OfferRevealScreen: React.FC = () => {
           </View>
 
           <View style={styles.offerActions}>
-            <Button
-              title="Accept Offer"
-              onPress={handleGoToDashboard}
-              style={styles.acceptButton}
-            />
+            {isOfferAccepted ? (
+              <View style={styles.acceptedBadge}>
+                <Text style={styles.acceptedIcon}>✓</Text>
+                <Text style={styles.acceptedText}>Offer Accepted</Text>
+              </View>
+            ) : (
+              <Button
+                title="Accept Offer"
+                onPress={handleAcceptOffer}
+                style={styles.acceptButton}
+              />
+            )}
             <Button
               title="Go to Dashboard"
               onPress={handleGoToDashboard}
@@ -312,6 +329,27 @@ const styles = StyleSheet.create({
   },
   acceptButton: {
     backgroundColor: colors.success,
+  },
+  acceptedBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#ECFDF5',
+    paddingVertical: 16,
+    borderRadius: borderRadius.lg,
+    borderWidth: 2,
+    borderColor: '#10B981',
+  },
+  acceptedIcon: {
+    fontSize: 18,
+    color: '#10B981',
+    fontWeight: '700',
+    marginRight: 8,
+  },
+  acceptedText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#10B981',
   },
   dashboardButton: {
     borderColor: colors.border.default,

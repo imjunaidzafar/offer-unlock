@@ -40,6 +40,7 @@ export const useOnboardingStore = create<WizardState>()(
       currentStep: 1,
       data: initialData,
       isCompleted: false,
+      isOfferAccepted: false,
 
       setCurrentStep: (step: number) => {
         set({currentStep: step});
@@ -76,11 +77,16 @@ export const useOnboardingStore = create<WizardState>()(
         set({isCompleted: true});
       },
 
+      acceptOffer: () => {
+        set({isOfferAccepted: true});
+      },
+
       resetWizard: () => {
         set({
           currentStep: 1,
           data: initialData,
           isCompleted: false,
+          isOfferAccepted: false,
         });
       },
     }),
@@ -91,6 +97,7 @@ export const useOnboardingStore = create<WizardState>()(
         currentStep: state.currentStep,
         data: state.data,
         isCompleted: state.isCompleted,
+        isOfferAccepted: state.isOfferAccepted,
       }),
       onRehydrateStorage: () => (state) => {
         onboardingHydrated = true;

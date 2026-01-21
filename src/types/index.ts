@@ -57,11 +57,13 @@ export interface WizardState {
   currentStep: number;
   data: WizardData;
   isCompleted: boolean;
+  isOfferAccepted: boolean;
   setCurrentStep: (step: number) => void;
   updateStep1: (data: Partial<Step1Data>) => void;
   updateStep2: (data: Partial<Step2Data>) => void;
   updateStep3: (data: Partial<Step3Data>) => void;
   completeWizard: () => void;
+  acceptOffer: () => void;
   resetWizard: () => void;
 }
 
