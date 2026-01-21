@@ -1,4 +1,4 @@
-package com.offerunlock
+package com.offerly
 
 import android.app.Application
 import com.facebook.react.PackageList
