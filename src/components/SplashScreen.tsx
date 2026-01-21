@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     width: 140,
     height: 140,
     borderRadius: 35,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: '#9061F0',
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',

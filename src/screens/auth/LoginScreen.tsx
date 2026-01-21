@@ -133,8 +133,6 @@ export const LoginScreen: React.FC = () => {
                 />
               )}
             />
-
-            <Text style={styles.forgotPassword}>Forgot password?</Text>
           </View>
 
           <View style={styles.footer}>
@@ -217,13 +215,6 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.lg,
     padding: 20,
     ...shadows.md,
-  },
-  forgotPassword: {
-    fontSize: 14,
-    color: colors.accent.primary,
-    fontWeight: '600',
-    textAlign: 'right',
-    marginTop: 8,
   },
   footer: {
     paddingVertical: 24,

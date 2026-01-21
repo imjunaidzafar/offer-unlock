@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     ...shadows.sm,
   },
   buttonOutline: {
-    backgroundColor: 'transparent',
+    backgroundColor: colors.background.card,
     borderWidth: 2,
     borderColor: colors.accent.primary,
   },
