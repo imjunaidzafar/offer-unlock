@@ -3,31 +3,31 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import type {RootStackParamList} from '../types';
 import {WizardStack} from './WizardStack';
 import {AuthStack} from './AuthStack';
-import {ResultScreen} from '../screens/wizard/ResultScreen';
-import {HomeScreen} from '../screens/HomeScreen';
-import {CompareScreen} from '../screens/CompareScreen';
-import {SupportScreen} from '../screens/SupportScreen';
-import {SettingsScreen} from '../screens/SettingsScreen';
-import {useWizardStore, isWizardHydrated, onWizardHydration} from '../store/useWizardStore';
-import {useAuthStore, isAuthHydrated, onAuthHydration} from '../store/useAuthStore';
+import {OfferRevealScreen} from '../features/onboarding/OfferRevealScreen';
+import {DashboardScreen} from '../features/DashboardScreen';
+import {CompareScreen} from '../features/CompareScreen';
+import {SupportScreen} from '../features/SupportScreen';
+import {SettingsScreen} from '../features/SettingsScreen';
+import {useOnboardingStore, isOnboardingHydrated, onOnboardingHydration} from '../state/useOnboardingStore';
+import {useSessionStore, isSessionHydrated, onSessionHydration} from '../state/useSessionStore';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const RootNavigator: React.FC = () => {
-  const isWizardCompleted = useWizardStore(state => state.isCompleted);
-  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+  const isWizardCompleted = useOnboardingStore(state => state.isCompleted);
+  const isAuthenticated = useSessionStore(state => state.isAuthenticated);
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     const checkHydration = () => {
-      if (isAuthHydrated() && isWizardHydrated()) {
+      if (isSessionHydrated() && isOnboardingHydrated()) {
         setIsReady(true);
       }
     };
 
     checkHydration();
-    onAuthHydration(checkHydration);
-    onWizardHydration(checkHydration);
+    onSessionHydration(checkHydration);
+    onOnboardingHydration(checkHydration);
 
     const timer = setTimeout(() => setIsReady(true), 500);
     return () => clearTimeout(timer);
@@ -36,11 +36,6 @@ export const RootNavigator: React.FC = () => {
   if (!isReady) {
     return null;
   }
-
-  // Auth First Flow:
-  // - If authenticated AND wizard completed -> Home (returning user)
-  // - If authenticated but wizard NOT completed -> Wizard
-  // - If NOT authenticated -> Auth (Login/SignUp)
 
   const getInitialRoute = (): keyof RootStackParamList => {
     if (isAuthenticated && isWizardCompleted) {
@@ -63,14 +58,14 @@ export const RootNavigator: React.FC = () => {
       <Stack.Screen name="Wizard" component={WizardStack} />
       <Stack.Screen
         name="Result"
-        component={ResultScreen}
+        component={OfferRevealScreen}
         options={{
           gestureEnabled: false,
         }}
       />
       <Stack.Screen
         name="Home"
-        component={HomeScreen}
+        component={DashboardScreen}
         options={{
           gestureEnabled: false,
         }}

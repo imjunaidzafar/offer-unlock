@@ -1,9 +1,9 @@
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import type {WizardStackParamList} from '../types';
-import {Step1PersonalInfo} from '../screens/wizard/Step1PersonalInfo';
-import {Step2IncomeDetails} from '../screens/wizard/Step2IncomeDetails';
-import {Step3Preferences} from '../screens/wizard/Step3Preferences';
+import {PersonalDetailsScreen} from '../features/onboarding/PersonalDetailsScreen';
+import {FinancialInfoScreen} from '../features/onboarding/FinancialInfoScreen';
+import {PreferencesScreen} from '../features/onboarding/PreferencesScreen';
 
 const Stack = createNativeStackNavigator<WizardStackParamList>();
 
@@ -14,9 +14,9 @@ export const WizardStack: React.FC = () => {
         headerShown: false,
         animation: 'slide_from_right',
       }}>
-      <Stack.Screen name="Step1" component={Step1PersonalInfo} />
-      <Stack.Screen name="Step2" component={Step2IncomeDetails} />
-      <Stack.Screen name="Step3" component={Step3Preferences} />
+      <Stack.Screen name="Step1" component={PersonalDetailsScreen} />
+      <Stack.Screen name="Step2" component={FinancialInfoScreen} />
+      <Stack.Screen name="Step3" component={PreferencesScreen} />
     </Stack.Navigator>
   );
 };
