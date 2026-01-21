@@ -1,90 +1,85 @@
-# OfferUnlock - AI Coding Standards & Governance
+# Offerly Development Guidelines
 
-## Project Overview
-OfferUnlock is a React Native CLI app implementing a high-conversion multi-step onboarding wizard with authentication.
+## Application Context
+Mobile onboarding application built with React Native CLI, featuring multi-step form wizard and user authentication system.
 
-## Tech Stack (ENFORCED)
-- **Framework**: React Native CLI 0.74.x with TypeScript
-- **Navigation**: React Navigation v7 (native-stack)
-- **State Management**: Zustand with persist middleware
-- **Storage**: react-native-mmkv
-- **Forms**: react-hook-form + zod for validation
-- **Animations**: react-native-reanimated v3 (NO pre-built animation libraries for custom components)
-- **Testing**: Jest + React Native Testing Library
+## Core Technologies
+| Layer | Technology | Notes |
+|-------|------------|-------|
+| Runtime | React Native CLI 0.74.x | TypeScript enabled |
+| Routing | React Navigation v7 | native-stack navigator |
+| State | Zustand + MMKV | Persistent storage |
+| Forms | react-hook-form + zod | Schema validation |
+| Motion | react-native-reanimated v3 | Custom animations only |
+| Testing | Jest + RNTL | Unit + Integration |
 
-## Architecture Rules
-
-### File Structure
+## Directory Layout
 ```
 src/
-├── app/           # Entry point only
-├── navigation/    # Navigation configuration
-├── screens/       # Screen components (one per file)
-├── components/    # Reusable UI components
-│   ├── ui/        # Generic components (Button, Input, etc.)
-│   └── wizard/    # Wizard-specific components
-├── store/         # Zustand stores
-├── hooks/         # Custom React hooks
-├── utils/         # Pure utility functions
-└── types/         # TypeScript types/interfaces
+├── app/              # Bootstrap code
+├── navigation/       # Route definitions
+├── features/         # Screen modules
+│   ├── onboarding/   # Wizard flow
+│   └── authentication/
+├── shared/           # Common components
+│   ├── ui/           # Button, Input, etc.
+│   └── onboarding/   # Step indicator
+├── state/            # Global stores
+├── lib/              # Helpers & schemas
+├── design/           # Visual tokens
+└── types/            # Type definitions
 ```
 
-### Naming Conventions
-- Components: PascalCase (e.g., `FluidProgressBar.tsx`)
-- Hooks: camelCase with `use` prefix (e.g., `useWizardStore.ts`)
-- Utils: camelCase (e.g., `validation.ts`)
-- Types: PascalCase with descriptive names
+## Naming Standards
+| Type | Convention | Example |
+|------|------------|---------|
+| Components | PascalCase | `AnimatedStepIndicator.tsx` |
+| Stores | camelCase + use | `useOnboardingStore.ts` |
+| Utilities | camelCase | `schemas.ts` |
+| Types | PascalCase | `OnboardingState` |
 
-### Component Rules
-1. Use functional components with TypeScript
-2. Props must be typed with interfaces
-3. Use SafeAreaView or SafeAreaWrapper for all screens
-4. Handle keyboard avoiding for forms
-5. All interactive elements must have accessible labels
+## Component Guidelines
+- Functional components with typed props
+- SafeAreaWrapper on all screens
+- Keyboard handling for form inputs
+- Accessibility labels required
 
-### State Management Rules
-1. Use Zustand for global state
-2. Use react-hook-form for form state
-3. Persist wizard data to MMKV
-4. Clear persisted data only on successful completion
+## State Guidelines
+- Zustand for app-wide state
+- react-hook-form for form state
+- MMKV persistence for draft data
+- Clear data only after completion
 
-### Animation Rules
-1. Use Reanimated's useSharedValue and useAnimatedStyle
-2. Prefer withSpring/withTiming over withSequence for simple animations
-3. Run animations on UI thread (worklets)
-4. NO pre-built progress bar libraries - build custom
+## Animation Guidelines
+- useSharedValue + useAnimatedStyle
+- Prefer withSpring for natural feel
+- UI thread execution (worklets)
+- No third-party progress libraries
 
-### Validation Rules
-1. Define all schemas in src/utils/validation.ts
-2. Use zod for schema definition
-3. Validate on blur and on submit
-4. Show inline error messages
+## Validation Guidelines
+- Schemas in lib/schemas.ts
+- Zod for type-safe validation
+- Validate on blur + submit
+- Inline error display
 
-### Testing Rules
-1. Unit test all validation schemas
-2. Unit test store persistence logic
-3. Integration test navigation flows
-4. Mock MMKV and navigation in tests
+## Testing Guidelines
+- Schema edge cases
+- Store operations
+- Navigation flows
+- Mock native modules
 
-### Error Handling
-1. Handle network errors gracefully
-2. Show user-friendly error messages
-3. Log errors for debugging (console in dev)
-4. Never show raw error messages to users
+## Quality Standards
+- No `any` types
+- Prefer const
+- Early returns
+- Functions < 50 lines
+- DRY with hooks/utils
 
-### Code Quality
-1. No `any` types - use proper TypeScript
-2. Prefer const over let
-3. Use early returns for guard clauses
-4. Keep functions under 50 lines
-5. Extract repeated logic into hooks/utils
-
-## DO NOT
-- Use class components
-- Use AsyncStorage (use MMKV instead)
-- Use pre-built progress bar libraries
-- Skip form validation
-- Use inline styles excessively
-- Commit console.log statements
-- Use `any` type
-- Ignore TypeScript errors
+## Prohibited Patterns
+- Class components
+- AsyncStorage
+- Pre-built progress bars
+- Missing validation
+- Excessive inline styles
+- console.log in production
+- TypeScript errors

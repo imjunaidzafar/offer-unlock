@@ -1,58 +1,69 @@
-# AI Agent Governance Rules
+# Code Generation Policies
 
-## Project Context
-This is a React Native CLI app for a coding challenge. The goal is to demonstrate:
-1. Clean architecture and code organization
-2. Custom UI component development (animated progress bar)
-3. Proper form handling with validation
-4. State persistence across app restarts
-5. Comprehensive testing
+## Objective
+Build a production-quality React Native app demonstrating:
+- Modular architecture
+- Custom animation components
+- Robust form handling
+- Data persistence
+- Test coverage
 
-## When Generating Code
+## Generation Rules
 
-### Always
-- Use TypeScript with strict types
-- Follow the file structure defined in .cursorrules
-- Add proper error handling
-- Consider edge cases (empty states, loading, errors)
-- Use existing patterns from the codebase
+### Required Practices
+1. TypeScript with explicit types
+2. Adhere to directory structure in .cursorrules
+3. Comprehensive error handling
+4. Edge case coverage (empty, loading, error states)
+5. Consistent with existing codebase patterns
 
-### Never
-- Generate placeholder implementations
-- Skip validation logic
-- Use deprecated APIs
-- Ignore safe area constraints
-- Create overly complex solutions
+### Forbidden Practices
+1. Stub or placeholder code
+2. Skipped validation
+3. Deprecated APIs
+4. Ignored safe area insets
+5. Over-engineered solutions
 
-## Specific Component Guidelines
+## Component Specifications
 
-### FluidProgressBar (UI Task)
-- Must use react-native-reanimated directly
-- Animate with withSpring or withTiming
-- Support currentStep and totalSteps props
-- Include step indicators with scale animations
-- Implement easing for smooth transitions
+### AnimatedStepIndicator
+```
+Requirements:
+- Built with react-native-reanimated
+- Spring/timing animations
+- Props: currentStep, totalSteps
+- Step circles with scale effect
+- Smooth easing transitions
+```
 
-### Wizard Forms
-- Use react-hook-form with zodResolver
-- Auto-save to Zustand store on valid changes
-- Disable "Next" until form is valid
-- Show inline validation errors
+### Onboarding Forms
+```
+Requirements:
+- react-hook-form + zodResolver
+- Auto-persist valid data to store
+- Disabled navigation until valid
+- Inline validation feedback
+```
 
-### Authentication
-- Validate: username, email, phone (E.164), password
-- Handle: invalid input, network errors, duplicate accounts
-- Show appropriate error messages for each case
+### Session Management
+```
+Requirements:
+- Validate: username, email, phone, password
+- Handle: validation errors, network issues, duplicates
+- User-friendly error messages
+```
 
-## Testing Requirements
-- Validation schemas: test all rules and edge cases
-- Store persistence: test save, load, and clear operations
-- Navigation: test wizard step transitions
+## Test Coverage
 
-## Review Checklist
-Before finalizing any code, verify:
-- [ ] Types are properly defined
-- [ ] Safe areas are handled
-- [ ] Forms have validation
-- [ ] Errors are caught and displayed
-- [ ] Tests cover the functionality
+| Area | Requirements |
+|------|--------------|
+| Schemas | All rules, boundary cases |
+| State | CRUD operations, persistence |
+| Navigation | Screen transitions |
+
+## Pre-Commit Checklist
+- [ ] Explicit types defined
+- [ ] Safe areas respected
+- [ ] Validation implemented
+- [ ] Errors handled gracefully
+- [ ] Tests written

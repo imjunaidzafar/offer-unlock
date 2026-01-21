@@ -1,4 +1,4 @@
-# OfferUnlock
+# Offerly
 
 A high-conversion mobile onboarding flow built with React Native CLI, demonstrating a multi-step wizard with authentication, custom animations, and comprehensive form validation.
 
@@ -50,7 +50,7 @@ Ensure you have the following installed:
 
 ```bash
 git clone <repository-url>
-cd OfferUnlock
+cd Offerly
 ```
 
 ### 2. Install Dependencies
@@ -152,46 +152,46 @@ The project includes:
 ### Folder Structure
 
 ```
-OfferUnlock/
+Offerly/
 ├── src/
 │   ├── app/                    # App entry point
 │   ├── navigation/             # React Navigation configuration
 │   │   ├── RootNavigator.tsx   # Main navigator (Auth → Wizard → Result → Home)
-│   │   ├── WizardStack.tsx     # Wizard steps navigation
+│   │   ├── WizardStack.tsx     # Onboarding steps navigation
 │   │   └── AuthStack.tsx       # Auth screens navigation
-│   ├── screens/
-│   │   ├── wizard/             # Wizard step screens
-│   │   │   ├── Step1PersonalInfo.tsx
-│   │   │   ├── Step2IncomeDetails.tsx
-│   │   │   ├── Step3Preferences.tsx
-│   │   │   └── ResultScreen.tsx
-│   │   ├── auth/               # Authentication screens
+│   ├── features/               # Feature screens
+│   │   ├── onboarding/         # Onboarding wizard screens
+│   │   │   ├── PersonalDetailsScreen.tsx
+│   │   │   ├── FinancialInfoScreen.tsx
+│   │   │   ├── PreferencesScreen.tsx
+│   │   │   └── OfferRevealScreen.tsx
+│   │   ├── authentication/     # Authentication screens
 │   │   │   ├── LoginScreen.tsx
 │   │   │   └── SignUpScreen.tsx
-│   │   ├── HomeScreen.tsx      # User dashboard
+│   │   ├── DashboardScreen.tsx # User dashboard
 │   │   ├── CompareScreen.tsx   # Compare all offer types
 │   │   ├── SupportScreen.tsx   # FAQ and contact options
 │   │   └── SettingsScreen.tsx  # User settings and account
-│   ├── components/
+│   ├── shared/                 # Shared components
 │   │   ├── ui/                 # Reusable UI components
 │   │   │   ├── Button.tsx
 │   │   │   ├── Input.tsx
 │   │   │   ├── Select.tsx
 │   │   │   ├── Checkbox.tsx
 │   │   │   └── SafeAreaWrapper.tsx
-│   │   ├── wizard/
-│   │   │   └── FluidProgressBar.tsx  # Custom animated progress (UI TASK)
+│   │   ├── onboarding/
+│   │   │   └── AnimatedStepIndicator.tsx  # Custom animated progress (UI TASK)
 │   │   └── SplashScreen.tsx    # Animated splash screen
-│   ├── store/
-│   │   ├── useWizardStore.ts   # Wizard state + MMKV persistence
-│   │   ├── useAuthStore.ts     # Auth state (mock API + user database)
-│   │   └── storage.ts          # MMKV configuration
-│   ├── utils/
-│   │   ├── validation.ts       # Zod validation schemas
-│   │   └── offerCalculator.ts  # Dynamic offer calculations
-│   ├── theme/                  # Design tokens
+│   ├── state/                  # State management
+│   │   ├── useOnboardingStore.ts  # Onboarding state + MMKV persistence
+│   │   ├── useSessionStore.ts     # Session state (mock API + user database)
+│   │   └── storage.ts             # MMKV configuration
+│   ├── lib/                    # Utilities
+│   │   ├── schemas.ts          # Zod validation schemas
+│   │   └── quoteEngine.ts      # Dynamic offer calculations
+│   ├── design/                 # Design tokens
 │   │   ├── colors.ts           # Color palette and gradients
-│   │   └── index.ts            # Theme exports
+│   │   └── index.ts            # Design exports
 │   └── types/
 │       └── index.ts            # TypeScript type definitions
 ├── __tests__/
@@ -208,15 +208,15 @@ OfferUnlock/
 **Zustand** with persist middleware using **MMKV** for storage.
 
 ```typescript
-// Wizard state auto-persists to MMKV
-const useWizardStore = create(
+// Onboarding state auto-persists to MMKV
+const useOnboardingStore = create(
   persist(
     (set) => ({
       currentStep: 1,
       data: { step1: {...}, step2: {...}, step3: {...} },
       // Actions...
     }),
-    { name: 'wizard-storage', storage: createJSONStorage(() => zustandStorage) }
+    { name: 'onboarding-storage', storage: createJSONStorage(() => zustandStorage) }
   )
 );
 ```
